@@ -27,7 +27,7 @@ class Produto {
 class Usuario {
     static ultimoCodigo = 0;
     constructor(nome, senha, email, dadosRes, telefone) {
-        Usuario.ultimoCodigo += 1;
+        Usuario.ultimoCodigo++;
         this.cod_usuario = Usuario.ultimoCodigo;
         this.nome = nome;
         this.senha = senha;
@@ -85,7 +85,10 @@ class Usuario {
     }
 }
 class Pedido {
+    static ultimoCodigo = 0;
     constructor(usuario, carrinho) {
+        Pedido.ultimoCodigo++;
+        this.cod_pedido = Pedido.ultimoCodigo;
         console.log(usuario);
         console.log(carrinho);
         this.nomeCliente = usuario["qualquermerda"].nome;   
@@ -276,7 +279,9 @@ function comprar() {
     if (localStorage.getItem("pedido") == null)
         localStorage.setItem("pedido", JSON.stringify({}));
     let usuarioBanco = JSON.parse(localStorage.getItem("usuarios")) || {};
-    pedido = new Pedido(JSON.parse(localStorage.getItem("usuarios")) || {}, JSON.parse(localStorage.getItem("carrinho")) || {}); console.log(pedido)
+    pedido = new Pedido(JSON.parse(localStorage.getItem("usuarios")) || {}, JSON.parse(localStorage.getItem("carrinho")) || {}); console.log(pedido);
+    localStorage.setItem(`pedido${pedido.cod_pedido}`, JSON.stringify(pedido));
+    window.confirm(`Deseja confirmar o pedido de: ${pedido.itens[0].quantidade} Pizza de ${pedido.itens[0].nome}`);
 }
 function carregarCEP() {
     Usuario.pesquisaCEP(document.querySelector("input#cepUsuario").value);
