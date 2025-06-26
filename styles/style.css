@@ -110,3 +110,74 @@ nav.navbar .nav-link:hover {
         padding-bottom: 0.4rem;
     }
 }
+
+/* Estilização dos itens do carrinho */
+main#mainCarrinho {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+}
+
+main#mainCarrinho .produto {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    transition: 0.3s;
+}
+
+main#mainCarrinho .produto:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+main#mainCarrinho .produto h2 {
+    margin-bottom: 10px;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+main#mainCarrinho .produto span {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 1rem;
+}
+
+main#mainCarrinho .produto button {
+    margin-right: 5px;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    background-color: #198754;
+    color: white;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+main#mainCarrinho .produto button:hover {
+    background-color: #145f3c;
+}
+
+#btnFinalizarCompra {
+    margin: 30px auto 0 auto;
+    /* centraliza horizontalmente e dá espaçamento superior */
+    display: block;
+    /* necessário para centralizar com margin auto */
+    padding: 16px 30px;
+    /* aumenta a altura (vertical) e define uma largura agradável */
+    background-color: #0d6efd;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    width: fit-content;
+    /* a largura se ajusta ao conteúdo */
+}
+
+#btnFinalizarCompra:hover {
+    background-color: #084298;
+    cursor: pointer;
+}

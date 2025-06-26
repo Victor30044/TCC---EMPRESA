@@ -1,31 +1,46 @@
 let pedido;
+
 class Produto {
     static ultimoCodigo = 0;
+
+    // Construtor inicializa produto com nome, valor fixo, código incremental e quantidade do localStorage
     constructor(nome) {
         Produto.ultimoCodigo += 1;
         this.cod_produto = Produto.ultimoCodigo;
         this.nome = nome;
         this.valor = 49.9;
-        // this.quantidade = JSON.parse(localStorage.getItem('carrinho'))[`produto${this.cod_produto}`]
-        //     ? JSON.parse(localStorage.getItem('carrinho'))[`produto${this.cod_produto}`].quantidade
-        //     : 0;
-        // this.quantidade > 0 ? this.quantidade : this.quantidade = 0;
+
+        // Busca quantidade no carrinho do localStorage, se não existir inicializa 0
+        const carrinhoLS = JSON.parse(localStorage.getItem('carrinho')) || {};
+        this.quantidade = carrinhoLS[`produto${this.cod_produto}`]
+            ? carrinhoLS[`produto${this.cod_produto}`].quantidade
+            : 0;
+
+        if (this.quantidade < 0) this.quantidade = 0;
     }
+
+    // Incrementa quantidade do produto
     add() {
         this.quantidade++;
-        console.log(this.quantidade);
+        console.log(`Quantidade após adicionar: ${this.quantidade}`);
     }
+
+    // Decrementa quantidade do produto (mínimo 0)
     menosQuantidade() {
-        this.quantidade--;
-        console.log(this.quantidade);
+        if (this.quantidade > 0) this.quantidade--;
+        console.log(`Quantidade após remover: ${this.quantidade}`);
     }
+
+    // Remove um item (mesmo que menosQuantidade, mantém por compatibilidade)
     remove() {
-        this.quantidade--;
-        console.log(this.quantidade);
+        this.menosQuantidade();
     }
 }
+
 class Usuario {
     static ultimoCodigo = 0;
+
+    // Construtor básico para o usuário
     constructor(nome, senha, email, dadosRes) {
         Usuario.ultimoCodigo++;
         this.cod_usuario = Usuario.ultimoCodigo;
@@ -35,67 +50,56 @@ class Usuario {
         this.dadosRes = dadosRes;
     }
 
+    // Callback para registrar CEP na UI a partir do retorno da API ViaCEP
     static registraCEP(conteudo) {
         if (!("erro" in conteudo)) {
-            //Atualiza os campos com os valores.
             let rua = conteudo.logradouro;
             let bairro = conteudo.bairro;
             let cidade = conteudo.localidade;
+
             document.querySelector("input#ruaUsuario").value = rua;
             document.querySelector("input#bairroUsuario").value = bairro;
             document.querySelector("input#cidadeUsuario").value = cidade;
-        } //end if.
-        else {
-            //CEP não Encontrado.
+        } else {
             alert("CEP não encontrado.");
             return null;
         }
     }
 
+    // Pesquisa CEP usando API ViaCEP e insere script para callback
     static pesquisaCEP(valor) {
-        //Nova variável "cep" somente com dígitos.
         var cep = valor.replace(/\D/g, '');
 
-        //Verifica se campo cep possui valor informado.
         if (cep != "") {
-
-            //Expressão regular para validar o CEP.
             var validacep = /^[0-9]{8}$/;
 
-            //Valida o formato do CEP.
             if (validacep.test(cep)) {
-                //Cria um elemento javascript.
                 var script = document.createElement('script');
-
-                //Sincroniza com o callback.
                 script.src = 'https://viacep.com.br/ws/' + cep + '/json/?callback=Usuario.registraCEP';
-
-                //Insere script no documento e carrega o conteúdo.
                 document.body.appendChild(script);
-            } //end if.
-            else {
-                //cep é inválido.
+            } else {
                 alert("Formato de CEP inválido.");
             }
-        } //end if.
-        else {
-            //cep sem valor, limpa formulário.
         }
     }
 }
+
 class Pedido {
     static ultimoCodigo = 0;
+
+    // Construtor cria pedido a partir do usuário e do carrinho
     constructor(usuario, carrinho) {
         Pedido.ultimoCodigo++;
         this.cod_pedido = Pedido.ultimoCodigo;
-        console.log(usuario);
-        console.log(carrinho);
+
+        // Assumimos usuário salvo em "qualquermerda" na estrutura do localStorage
         this.nomeCliente = usuario["qualquermerda"].nome;
-        // Torna dadosRes seguro para uso com join
+
+        // Garante que dadosRes pode ser array ou string para o endereço
         if (Array.isArray(usuario["qualquermerda"].dadosRes)) {
             this.endereco = usuario["qualquermerda"].dadosRes.join(', ');
         } else if (typeof usuario["qualquermerda"].dadosRes === 'string') {
-            this.endereco = usuario["qualquermerda"].dadosRes; // já é string
+            this.endereco = usuario["qualquermerda"].dadosRes;
         } else {
             this.endereco = "Endereço não informado";
         }
@@ -105,6 +109,7 @@ class Pedido {
         this.itens = [];
         this.total = 0;
 
+        // Para cada produto no carrinho, cria objeto de item e calcula total
         for (let chave in carrinho) {
             let produto = carrinho[chave];
             this.itens.push({
@@ -117,6 +122,7 @@ class Pedido {
         }
     }
 
+    // Imprime informações detalhadas do pedido no console
     print() {
         console.log(`Cliente: ${this.nomeCliente}`);
         console.log(`Endereço: ${this.endereco}`);
@@ -142,18 +148,19 @@ function carregarCadastro() {
 }
 function atualizarProduto(cod) {
     console.log(`Funcao atualizarProduto${cod}`);
-    produtoatual = cardapio.find(Produto => Produto.cod_produto == cod);
+    // produtoatual = cardapio.find(Produto => Produto.cod_produto == cod);
+    produtoatual = produto;
     let divprotudoatual = document.querySelector(`div#id_produto${produtoatual.cod_produto}`)
     divprotudoatual.innerHTML = "";
     if (produtoatual.quantidade > 0) {
         divprotudoatual.innerHTML +=
             `
-    <div class="produto" id="id_produto${produtoatual.cod_produto}">
-    <h2>${produtoatual.nome}</h2>
-    <span>${produtoatual.valor} x ${produtoatual.quantidade} | <button onclick="addQuant(${produtoatual.cod_produto})">+</button> <button onclick="removeQuant(${produtoatual.cod_produto})">-</button></span>
-    ${produtoatual.quantidade > 0 ? `<button onclick="removeTudo(${produtoatual.cod_produto})">REMOVER</button>` : ""}
-    </div>
-    `
+        <div class="produto" id="id_produto${produtoatual.cod_produto}">
+        <h2>${produtoatual.nome}</h2>
+        <span>${produtoatual.valor} x ${produtoatual.quantidade} | <button onclick="addQuant(${produtoatual.cod_produto})">+</button> <button onclick="removeQuant(${produtoatual.cod_produto})">-</button></span>
+        ${produtoatual.quantidade > 0 ? `<button onclick="removeTudo(${produtoatual.cod_produto})">REMOVER</button>` : ""}
+        </div>
+        `
     }
 
 }
@@ -167,7 +174,8 @@ function add(cod) {
     localStorage.setItem("carrinho", JSON.stringify(carrinho));
 }
 function addQuant(cod) {
-    let produtoatual = cardapio.find(p => p.cod_produto === cod);
+    // let produtoatual = cardapio.find(p => p.cod_produto === cod);
+    produtoatual = produto;
     produtoatual.add();
 
     let carrinho = JSON.parse(localStorage.getItem("carrinho")) || {};
@@ -176,11 +184,13 @@ function addQuant(cod) {
     localStorage.setItem("carrinho", JSON.stringify(carrinho));
 
     atualizarProduto(cod);
-    carregarCarrinho();  // Atualiza total e exibição do carrinho
+    // carregarCarrinho()
+    carregarCarrinhoTemporario();  // Atualiza total e exibição do carrinho
 }
 
 function removeQuant(cod) {
-    let produtoatual = cardapio.find(p => p.cod_produto === cod);
+    // let produtoatual = cardapio.find(p => p.cod_produto === cod);
+    produtoatual = produto
     produtoatual.menosQuantidade();
 
     let carrinho = JSON.parse(localStorage.getItem("carrinho"));
@@ -194,12 +204,14 @@ function removeQuant(cod) {
     localStorage.setItem("carrinho", JSON.stringify(carrinho));
 
     atualizarProduto(cod);
-    carregarCarrinho();  // Atualiza total e exibição do carrinho
+    // carregarCarrinho()
+    carregarCarrinhoTemporario();  // Atualiza total e exibição do carrinho
 }
 
 function removeTudo(cod) {
     console.log(`Funcao remove${cod}`);
-    produtoatual = cardapio.find(Produto => Produto.cod_produto == cod);
+    // produtoatual = cardapio.find(Produto => Produto.cod_produto == cod);
+    produtoatual = produto;
     produtoatual.quantidade = 0;
     let carrinho = JSON.parse(localStorage.getItem("carrinho")) || {};
 
@@ -207,7 +219,8 @@ function removeTudo(cod) {
     localStorage.setItem("carrinho", JSON.stringify(carrinho));
     divprotudoatual = document.querySelector(`div#id_produto${cod}`); console.log(divprotudoatual);
     divprotudoatual.innerHTML = "";
-    carregarCarrinho();
+    // carregarCarrinho()
+    carregarCarrinhoTemporario();  // Atualiza total e exibição do carrinho
 }
 function menosQuantidade(cod) {
     console.log(`Funcao MenosQuantidade${cod}`);
@@ -251,10 +264,10 @@ async function carregarCardapio() {
             div.className = 'pizza';
 
             div.innerHTML = `
-        <div class="nome">${pizza.nome}</div>
-        <div class="descricao">${pizza.descricao || ''}</div>
-        <div class="preco">R$ ${pizza.preco.toFixed(2)}</div>
-      `;
+            <div class="nome">${pizza.nome}</div>
+            <div class="descricao">${pizza.descricao || ''}</div>
+            <div class="preco">R$ ${pizza.preco.toFixed(2)}</div>
+        `;
 
             container.appendChild(div);
         });
@@ -263,47 +276,61 @@ async function carregarCardapio() {
     }
 }
 
-function carregarCarrinho() {
-    let carrinho = JSON.parse(localStorage.getItem("carrinho")) || {};
-    let carrinhoKeys = Object.keys(carrinho);
-    let main = document.querySelector('main#mainCarrinho');
+// function carregarCarrinho() {
+//     let carrinho = JSON.parse(localStorage.getItem("carrinho")) || {};
+//     let carrinhoKeys = Object.keys(carrinho);
+//     let main = document.querySelector('main#mainCarrinho');
 
-    // Corrige duplicação de itens
-    main.innerHTML = "";
+//     // Corrige duplicação de itens
+//     main.innerHTML = "";
 
-    let total = 0;
+//     let total = 0;
 
-    for (let i = 0; i < carrinhoKeys.length; i++) {
-        let produto = carrinho[carrinhoKeys[i]];
-        if (produto.quantidade > 0) {
-            main.innerHTML += `
-                <div class="produto" id="id_produto${produto.cod_produto}">
-                    <h2>${produto.nome}</h2>
-                    <span>${produto.valor} x ${produto.quantidade} | 
-                        <button onclick="addQuant(${produto.cod_produto})">+</button> 
-                        <button onclick="removeQuant(${produto.cod_produto})">-</button>
-                    </span>
-                    <button onclick="removeTudo(${produto.cod_produto})">REMOVER</button>
-                </div>
-            `;
-            total += produto.valor * produto.quantidade;
-        }
-    }
+//     for (let i = 0; i < carrinhoKeys.length; i++) {
+//         let produto = carrinho[carrinhoKeys[i]];
+//         if (produto.quantidade > 0) {
+//             main.innerHTML += `
+//                 <div class="produto" id="id_produto${produto.cod_produto}">
+//                     <h2>${produto.nome}</h2>
+//                     <span>${produto.valor} x ${produto.quantidade} | 
+//                         <button onclick="addQuant(${produto.cod_produto})">+</button> 
+//                         <button onclick="removeQuant(${produto.cod_produto})">-</button>
+//                     </span>
+//                     <button onclick="removeTudo(${produto.cod_produto})">REMOVER</button>
+//                 </div>
+//             `;
+//             total += produto.valor * produto.quantidade;
+//         }
+//     }
 
-    // Remove div antiga do total, se houver
-    let antigoFinalizar = document.getElementById('finalizarcompra');
-    if (antigoFinalizar) antigoFinalizar.remove();
+//     // Remove div antiga do total, se houver
+//     let antigoFinalizar = document.getElementById('finalizarcompra');
+//     if (antigoFinalizar) antigoFinalizar.remove();
 
-    // Cria nova div do total
-    let divfinalizarcompra = document.createElement('div');
-    divfinalizarcompra.setAttribute('id', "finalizarcompra");
-    divfinalizarcompra.innerHTML = `
-    <p>Total: R$ ${total.toFixed(2)}</p>
-    <button onclick="comprar()">Comprar</button>
-    `;
-    document.body.appendChild(divfinalizarcompra);
+//     // Cria nova div do total
+//     let divfinalizarcompra = document.createElement('div');
+//     divfinalizarcompra.setAttribute('id', "finalizarcompra");
+//     divfinalizarcompra.innerHTML = `
+//     <p>Total: R$ ${total.toFixed(2)}</p>
+//     <button onclick="comprar()">Comprar</button>
+//     `;
+//     document.body.appendChild(divfinalizarcompra);
+// }
+produto = new Produto("Muzarella");
+function carregarCarrinhoTemporario() {
+    document.querySelector('main#mainCarrinho').innerHTML = `
+            <div class="produto" id="id_produto${produto.cod_produto}">
+                <h2>${produto.nome}</h2>
+                <span>${produto.valor} x ${produto.quantidade} |
+                    <button onclick="addQuant(${produto.cod_produto})">+</button>
+                    <button onclick="removeQuant(${produto.cod_produto})">-</button><br>
+                </span>
+                <button onclick="removeTudo(${produto.cod_produto})">REMOVER</button>
+            </div>
+    `
+    localStorage.setItem('Carrinho', JSON.stringify);
+    exibirBotaoFinalizar()
 }
-
 function comprar() {
     if (localStorage.getItem("pedido") == null)
         localStorage.setItem("pedido", JSON.stringify({}));
@@ -489,4 +516,142 @@ function mostrarCamposFaltando() {
     }
 
     return true;
+}
+function exibirBotaoFinalizar() {
+    const carrinho = JSON.parse(localStorage.getItem("carrinho")) || {};
+    const temItens = Object.values(carrinho).some(p => p.quantidade > 0);
+
+    const main = document.getElementById("mainCarrinho");
+
+    let botaoExistente = document.getElementById("btnFinalizarCompra");
+    if (botaoExistente) botaoExistente.remove();
+
+    if (temItens) {
+        const btn = document.createElement("button");
+        btn.innerText = "Finalizar Compra";
+        btn.className = "btn btn-success mt-3";
+        btn.id = "btnFinalizarCompra";
+        btn.onclick = abrirModalPagamento;
+
+        main.appendChild(btn);
+    }
+}
+
+function abrirModalPagamento() {
+    const modalHtml = `
+    <div class="modal fade" id="modalPagamento" tabindex="-1" aria-labelledby="modalPagamentoLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <form onsubmit="processarPagamento(event)">
+            <div class="modal-header">
+              <h5 class="modal-title" id="modalPagamentoLabel">Forma de Pagamento</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="pagamento" id="credito" value="credito" checked>
+                <label class="form-check-label" for="credito">Cartão de Crédito</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="pagamento" id="entrega" value="entrega">
+                <label class="form-check-label" for="entrega">Pagar na Entrega</label>
+              </div>
+
+              <div id="dadosCartao" class="mt-3">
+                <label>Número do Cartão</label>
+                <input class="form-control" type="text" id="numeroCartao" required>
+                <label class="mt-2">Validade</label>
+                <input class="form-control" type="month" id="validadeCartao" required>
+                <label class="mt-2">CVV</label>
+                <input class="form-control" type="text" id="cvvCartao" required>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary">Confirmar Pagamento</button>
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    `;
+
+    document.body.insertAdjacentHTML("beforeend", modalHtml);
+
+    const modal = new bootstrap.Modal(document.getElementById("modalPagamento"));
+    modal.show();
+
+    // Oculta campos de cartão se usuário escolher "entrega"
+    document.getElementById("credito").addEventListener("change", () => {
+        document.getElementById("dadosCartao").style.display = "block";
+    });
+    document.getElementById("entrega").addEventListener("change", () => {
+        document.getElementById("dadosCartao").style.display = "none";
+    });
+    document.getElementById('pagarCartao').addEventListener('click', () => {
+        const numero = document.getElementById('numeroCartao').value.replace(/\s/g, '');
+
+        const bandeira = detectarBandeira(numero);
+
+        if (!bandeira) {
+            alert('Número de cartão inválido!');
+            return;
+        }
+
+        alert(`Pagamento aprovado com cartão ${bandeira}`);
+        fecharModalPagamento();
+    });
+
+}
+
+function processarPagamento(event) {
+    event.preventDefault();
+
+    const tipo = document.querySelector('input[name="pagamento"]:checked').value;
+
+    if (tipo === "credito") {
+        const numero = document.getElementById("numeroCartao").value.trim();
+        const validade = document.getElementById("validadeCartao").value.trim();
+        const cvv = document.getElementById("cvvCartao").value.trim();
+
+        const bandeira = detectarBandeira(numero);
+
+        if (!numero || !validade || !cvv || !bandeira) {
+            alert("Cartão inválido ou campos incompletos.");
+            return;
+        }
+
+        alert(`Pagamento com cartão ${bandeira} aprovado!`);
+    } else {
+        alert("Pagamento será feito na entrega.");
+    }
+
+    // Criar pedido apenas se o cartão foi validado ou for pagamento na entrega
+    let usuarioBanco = JSON.parse(localStorage.getItem("usuarios")) || {};
+    let carrinho = JSON.parse(localStorage.getItem("carrinho")) || {};
+
+    const pedido = new Pedido(usuarioBanco, carrinho);
+    localStorage.setItem(`pedido${pedido.cod_pedido}`, JSON.stringify(pedido));
+
+    alert(`Pedido confirmado de ${pedido.itens[0].quantidade}x ${pedido.itens[0].nome}`);
+    localStorage.removeItem("carrinho");
+    location.reload();
+}
+// Detectar bandeira do cartão com regex
+const cartoes = {
+    Visa: /^4[0-9]{12}(?:[0-9]{3})$/,
+    Mastercard: /^5[1-5][0-9]{14}$/,
+    Amex: /^3[47][0-9]{13}$/,
+    DinersClub: /^3(?:0[0-5]|[68][0-9])[0-9]{11}$/,
+    Discover: /^6(?:011|5[0-9]{2})[0-9]{12}$/,
+    JCB: /^(?:2131|1800|35\d{3})\d{11}$/
+};
+
+function detectarBandeira(numeroCartao) {
+    for (let bandeira in cartoes) {
+        if (numeroCartao.match(cartoes[bandeira])) {
+            return bandeira;
+        }
+    }
+    return false;
 }
