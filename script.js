@@ -90,7 +90,7 @@ class Pedido {
         this.cod_pedido = Pedido.ultimoCodigo;
         console.log(usuario);
         console.log(carrinho);
-        this.nomeCliente = usuario["qualquermerda"].nome;   
+        this.nomeCliente = usuario["qualquermerda"].nome;
         // Torna dadosRes seguro para uso com join
         if (Array.isArray(usuario["qualquermerda"].dadosRes)) {
             this.endereco = usuario["qualquermerda"].dadosRes.join(', ');
@@ -215,52 +215,52 @@ function menosQuantidade(cod) {
     produtoatual.menosQuantidade();
 }
 // function carregarCardapio() {
-    // if (localStorage.getItem("carrinho") == null)
-    //     localStorage.setItem("carrinho", JSON.stringify({}));
+// if (localStorage.getItem("carrinho") == null)
+//     localStorage.setItem("carrinho", JSON.stringify({}));
 
-    // let main = document.querySelector('main#mainCardapio');
+// let main = document.querySelector('main#mainCardapio');
 
-    // for (i = 0; i < cardapio.length; i++) {
-    //     main.innerHTML +=
-    //         `
-    //     <div class="produto" id="id_produto${cardapio[i].cod_produto}">
-    //     <h2>${cardapio[i].nome}</h2>
-    //     <p>${cardapio[i].valor}</p>
-    //     <button onclick="add(${cardapio[i].cod_produto})">Acionar ao carrinho</button>
-    //     </div>
-    //     `
+// for (i = 0; i < cardapio.length; i++) {
+//     main.innerHTML +=
+//         `
+//     <div class="produto" id="id_produto${cardapio[i].cod_produto}">
+//     <h2>${cardapio[i].nome}</h2>
+//     <p>${cardapio[i].valor}</p>
+//     <button onclick="add(${cardapio[i].cod_produto})">Acionar ao carrinho</button>
+//     </div>
+//     `
 async function carregarCardapio() {
-  console.log('carregarCardapio chamada');
-  try {
-    const res = await fetch('http://localhost:3000/produtos');
-    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+    console.log('carregarCardapio chamada');
+    try {
+        const res = await fetch('http://localhost:3000/produtos');
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
 
-    const pizzas = await res.json();
-    console.log('Pizzas carregadas:', pizzas);
+        const pizzas = await res.json();
+        console.log('Pizzas carregadas:', pizzas);
 
-    const container = document.getElementById('mainCardapio');
-    container.innerHTML = ''; // limpa antes
+        const container = document.getElementById('mainCardapio');
+        container.innerHTML = ''; // limpa antes
 
-    if (pizzas.length === 0) {
-      container.innerText = 'Nenhuma pizza cadastrada.';
-      return;
-    }
+        if (pizzas.length === 0) {
+            container.innerText = 'Nenhuma pizza cadastrada.';
+            return;
+        }
 
-    pizzas.forEach(pizza => {
-      const div = document.createElement('div');
-      div.className = 'pizza';
+        pizzas.forEach(pizza => {
+            const div = document.createElement('div');
+            div.className = 'pizza';
 
-      div.innerHTML = `
+            div.innerHTML = `
         <div class="nome">${pizza.nome}</div>
         <div class="descricao">${pizza.descricao || ''}</div>
         <div class="preco">R$ ${pizza.preco.toFixed(2)}</div>
       `;
 
-      container.appendChild(div);
-    });
-  } catch (error) {
-    console.error('Erro ao carregar pizzas:', error);
-  }
+            container.appendChild(div);
+        });
+    } catch (error) {
+        console.error('Erro ao carregar pizzas:', error);
+    }
 }
 
 function carregarCarrinho() {
@@ -316,77 +316,177 @@ function carregarCEP() {
     Usuario.pesquisaCEP(document.querySelector("input#cepUsuario").value);
 }
 async function cadastrarUsuario(event) {
-  event.preventDefault();
+    event.preventDefault();
 
-  let nome = document.querySelector('input#nomeUsuario').value;
-  let senha = document.querySelector('input#senhaUsuario').value;
-  let email = document.querySelector('input#emailUsuario').value;
-  // se não tem, precisa adicionar no form
+    let nome = document.querySelector('input#nomeUsuario').value;
+    let senha = document.querySelector('input#senhaUsuario').value;
+    let email = document.querySelector('input#emailUsuario').value;
+    // se não tem, precisa adicionar no form
 
-  if (!nome || !email || !senha) {
-    alert('Preencha todos os campos!');
-    return;
-  }
+    if (!mostrarCamposFaltando()) return;
 
-  Usuario.pesquisaCEP(document.querySelector("input#cepUsuario").value);
 
-  let numero = document.querySelector('input#numUsuario').value;
-  let complemento = document.querySelector('input#complementoUsuario').value;
+    Usuario.pesquisaCEP(document.querySelector("input#cepUsuario").value);
 
-  let endereco = [];
+    let numero = document.querySelector('input#numUsuario').value;
+    let complemento = document.querySelector('input#complementoUsuario').value;
 
-  if (!numero || !complemento) {
-    alert('Número e complemento obrigatórios!');
-    return;
-  }
+    let endereco = [];
 
-  let rua = document.querySelector('input#ruaUsuario').value;
-  let bairro = document.querySelector('input#bairroUsuario').value;
-  let cidade = document.querySelector('input#cidadeUsuario').value;
-  let telefone = 40028922;
-
-  if (rua) endereco.push(rua);
-  if (bairro) endereco.push(bairro);
-  if (cidade) endereco.push(cidade);
-
-  if (endereco.length <= 0) {
-    alert('Endereço inválido!');
-    return;
-  }
-
-  // Monta string do endereço
-  let enderecoStr = endereco.join(', ') + ', ' + numero + ' ' + complemento;
-
-  let usuario = {
-    nome,
-    email,
-    senha,
-    telefone,   
-    endereco: enderecoStr
-  };
-
-  // salva no localStorage, se quiser manter
-  let usuarioBanco = JSON.parse(localStorage.getItem("usuarios")) || {};
-  usuarioBanco["qualquermerda"] = usuario;
-  localStorage.setItem("usuarios", JSON.stringify(usuarioBanco));
-
-  // envia para o backend
-  try {
-    let res = await fetch('http://localhost:3000/usuarios', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(usuario)
-    });
-
-    if (!res.ok) {
-      throw new Error('Erro ao cadastrar usuário');
+    if (!numero || !complemento) {
+        alert('Número e complemento obrigatórios!');
+        return;
     }
 
-    alert('Usuário cadastrado com sucesso!');
-    // opcional: redirecionar ou limpar formulário
-  } catch (error) {
-    console.error(error);
-    alert('Falha ao cadastrar usuário');
-  }
-}
+    let rua = document.querySelector('input#ruaUsuario').value;
+    let bairro = document.querySelector('input#bairroUsuario').value;
+    let cidade = document.querySelector('input#cidadeUsuario').value;
+    if (validaCPF) { let cpf = document.querySelector('input#cpfUsuario').value; } else { return }
+    let telefone = 40028922;
 
+    if (rua) endereco.push(rua);
+    if (bairro) endereco.push(bairro);
+    if (cidade) endereco.push(cidade);
+
+    if (endereco.length <= 0) {
+        alert('Endereço inválido!');
+        return;
+    }
+
+    // Monta string do endereço
+    let enderecoStr = endereco.join(', ') + ', ' + numero + ' ' + complemento;
+
+    let usuario = {
+        nome,
+        email,
+        cpf,
+        senha,
+        telefone,
+        endereco: enderecoStr
+    };
+
+    // salva no localStorage, se quiser manter
+    let usuarioBanco = JSON.parse(localStorage.getItem("usuarios")) || {};
+    usuarioBanco["qualquermerda"] = usuario;
+    localStorage.setItem("usuarios", JSON.stringify(usuarioBanco));
+
+    // envia para o backend
+    try {
+        let res = await fetch('http://localhost:3000/usuarios', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(usuario)
+        });
+
+        if (!res.ok) {
+            throw new Error('Erro ao cadastrar usuário');
+        }
+
+        alert('Usuário cadastrado com sucesso!');
+        // opcional: redirecionar ou limpar formulário
+    } catch (error) {
+        console.error(error);
+        alert('Falha ao cadastrar usuário');
+    }
+}
+// validar cpf 
+function validaCPF(cpf) {
+    var Soma = 0
+    var Resto
+
+    var strCPF = String(cpf).replace(/[^\d]/g, '')
+
+    if (strCPF.length !== 11)
+        return false
+
+    if ([
+        '00000000000',
+        '11111111111',
+        '22222222222',
+        '33333333333',
+        '44444444444',
+        '55555555555',
+        '66666666666',
+        '77777777777',
+        '88888888888',
+        '99999999999',
+    ].indexOf(strCPF) !== -1)
+        return false
+
+    for (i = 1; i <= 9; i++)
+        Soma = Soma + parseInt(strCPF.substring(i - 1, i)) * (11 - i);
+
+    Resto = (Soma * 10) % 11
+
+    if ((Resto == 10) || (Resto == 11))
+        Resto = 0
+
+    if (Resto != parseInt(strCPF.substring(9, 10)))
+        return false
+
+    Soma = 0
+
+    for (i = 1; i <= 10; i++)
+        Soma = Soma + parseInt(strCPF.substring(i - 1, i)) * (12 - i)
+
+    Resto = (Soma * 10) % 11
+
+    if ((Resto == 10) || (Resto == 11))
+        Resto = 0
+
+    if (Resto != parseInt(strCPF.substring(10, 11)))
+        return false
+
+    return true
+}
+function mostrarCamposFaltando() {
+    const camposFaltando = [];
+
+    function checar(id, nomeCampo, validacao = null) {
+        const input = document.querySelector(`#${id}`);
+        const valor = input.value.trim();
+
+        let valido = valor !== '';
+        if (validacao && valor !== '') {
+            valido = validacao(valor);
+        }
+
+        if (!valido) {
+            camposFaltando.push(nomeCampo);
+            input.classList.add('erro');
+        } else {
+            input.classList.remove('erro');
+        }
+    }
+
+    checar('nomeUsuario', 'Nome');
+    checar('emailUsuario', 'Email');
+    checar('senhaUsuario', 'Senha');
+    checar('cpfUsuario', 'CPF', validaCPF);
+    checar('cepUsuario', 'CEP');
+    checar('numUsuario', 'Número');
+    checar('complementoUsuario', 'Complemento');
+
+    // Endereço via CEP
+    const rua = document.querySelector('#ruaUsuario');
+    const bairro = document.querySelector('#bairroUsuario');
+    const cidade = document.querySelector('#cidadeUsuario');
+
+    if (!rua.value || !bairro.value || !cidade.value) {
+        camposFaltando.push('Endereço (via CEP)');
+        rua.classList.add('erro');
+        bairro.classList.add('erro');
+        cidade.classList.add('erro');
+    } else {
+        rua.classList.remove('erro');
+        bairro.classList.remove('erro');
+        cidade.classList.remove('erro');
+    }
+
+    if (camposFaltando.length > 0) {
+        alert(`Preencha os seguintes campos corretamente:\n- ${camposFaltando.join('\n- ')}`);
+        return false;
+    }
+
+    return true;
+}
