@@ -6,10 +6,10 @@ class Produto {
         this.cod_produto = Produto.ultimoCodigo;
         this.nome = nome;
         this.valor = 49.9;
-        this.quantidade = JSON.parse(localStorage.getItem('carrinho'))[`produto${this.cod_produto}`]
-            ? JSON.parse(localStorage.getItem('carrinho'))[`produto${this.cod_produto}`].quantidade
-            : 0;
-        this.quantidade > 0 ? this.quantidade : this.quantidade = 0;
+        // this.quantidade = JSON.parse(localStorage.getItem('carrinho'))[`produto${this.cod_produto}`]
+        //     ? JSON.parse(localStorage.getItem('carrinho'))[`produto${this.cod_produto}`].quantidade
+        //     : 0;
+        // this.quantidade > 0 ? this.quantidade : this.quantidade = 0;
     }
     add() {
         this.quantidade++;
@@ -26,12 +26,11 @@ class Produto {
 }
 class Usuario {
     static ultimoCodigo = 0;
-    constructor(nome, senha, email, dadosRes, telefone) {
+    constructor(nome, senha, email, dadosRes) {
         Usuario.ultimoCodigo++;
         this.cod_usuario = Usuario.ultimoCodigo;
         this.nome = nome;
         this.senha = senha;
-        this.telefone = telefone;
         this.email = email;
         this.dadosRes = dadosRes;
     }
@@ -101,7 +100,6 @@ class Pedido {
             this.endereco = "Endereço não informado";
         }
 
-        this.telefone = usuario["qualquermerda"].telefone;
         this.email = usuario["qualquermerda"].email;
 
         this.itens = [];
@@ -122,7 +120,6 @@ class Pedido {
     print() {
         console.log(`Cliente: ${this.nomeCliente}`);
         console.log(`Endereço: ${this.endereco}`);
-        console.log(`Telefone: ${this.telefone}`);
         console.log(`Email: ${this.email}`);
         console.log(`Total: R$ ${this.total.toFixed(2)}`);
         console.log(`Itens:`);
@@ -217,23 +214,55 @@ function menosQuantidade(cod) {
     produtoatual = objetos.find(Produto => Produto.cod_produto == cod);
     produtoatual.menosQuantidade();
 }
-function carregarCardapio() {
-    if (localStorage.getItem("carrinho") == null)
-        localStorage.setItem("carrinho", JSON.stringify({}));
+// function carregarCardapio() {
+    // if (localStorage.getItem("carrinho") == null)
+    //     localStorage.setItem("carrinho", JSON.stringify({}));
 
-    let main = document.querySelector('main#mainCardapio');
+    // let main = document.querySelector('main#mainCardapio');
 
-    for (i = 0; i < cardapio.length; i++) {
-        main.innerHTML +=
-            `
-        <div class="produto" id="id_produto${cardapio[i].cod_produto}">
-        <h2>${cardapio[i].nome}</h2>
-        <p>${cardapio[i].valor}</p>
-        <button onclick="add(${cardapio[i].cod_produto})">Acionar ao carrinho</button>
-        </div>
-        `
+    // for (i = 0; i < cardapio.length; i++) {
+    //     main.innerHTML +=
+    //         `
+    //     <div class="produto" id="id_produto${cardapio[i].cod_produto}">
+    //     <h2>${cardapio[i].nome}</h2>
+    //     <p>${cardapio[i].valor}</p>
+    //     <button onclick="add(${cardapio[i].cod_produto})">Acionar ao carrinho</button>
+    //     </div>
+    //     `
+async function carregarCardapio() {
+  console.log('carregarCardapio chamada');
+  try {
+    const res = await fetch('http://localhost:3000/produtos');
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+
+    const pizzas = await res.json();
+    console.log('Pizzas carregadas:', pizzas);
+
+    const container = document.getElementById('mainCardapio');
+    container.innerHTML = ''; // limpa antes
+
+    if (pizzas.length === 0) {
+      container.innerText = 'Nenhuma pizza cadastrada.';
+      return;
     }
+
+    pizzas.forEach(pizza => {
+      const div = document.createElement('div');
+      div.className = 'pizza';
+
+      div.innerHTML = `
+        <div class="nome">${pizza.nome}</div>
+        <div class="descricao">${pizza.descricao || ''}</div>
+        <div class="preco">R$ ${pizza.preco.toFixed(2)}</div>
+      `;
+
+      container.appendChild(div);
+    });
+  } catch (error) {
+    console.error('Erro ao carregar pizzas:', error);
+  }
 }
+
 function carregarCarrinho() {
     let carrinho = JSON.parse(localStorage.getItem("carrinho")) || {};
     let carrinhoKeys = Object.keys(carrinho);
@@ -286,48 +315,78 @@ function comprar() {
 function carregarCEP() {
     Usuario.pesquisaCEP(document.querySelector("input#cepUsuario").value);
 }
-function cadastrarUsuario(event) {
-    event.preventDefault();
-    let nome = document.querySelector('input#nomeUsuario').value;
-    let senha = document.querySelector('input#senhaUsuario').value;
-    let email = document.querySelector('input#emailUsuario').value;
+async function cadastrarUsuario(event) {
+  event.preventDefault();
 
-    if (nome == null || nome.trim() == "")
-        return;
-    if (email == null || email.trim() == "")
-        return;
-    if (senha == null || senha.trim() == "")
-        return;
-    Usuario.pesquisaCEP(document.querySelector("input#cepUsuario").value)
+  let nome = document.querySelector('input#nomeUsuario').value;
+  let senha = document.querySelector('input#senhaUsuario').value;
+  let email = document.querySelector('input#emailUsuario').value;
+  // se não tem, precisa adicionar no form
 
-    let numero = document.querySelector('input#numUsuario').value;
-    let complemento = document.querySelector('input#complementoUsuario').value;
+  if (!nome || !email || !senha) {
+    alert('Preencha todos os campos!');
+    return;
+  }
 
-    let endereco = [];
+  Usuario.pesquisaCEP(document.querySelector("input#cepUsuario").value);
 
-    if (numero == null || numero.trim() == "")
-        return;
-    if (complemento == null || complemento.trim() == "")
-        return;
+  let numero = document.querySelector('input#numUsuario').value;
+  let complemento = document.querySelector('input#complementoUsuario').value;
 
-    let rua = document.querySelector('input#ruaUsuario').value
-    let bairro = document.querySelector('input#bairroUsuario').value
-    let cidade = document.querySelector('input#cidadeUsuario').value
+  let endereco = [];
 
-    if (rua != null && rua.trim() != "")
-        endereco.push(rua);
-    if (bairro != null && bairro.trim() != "")
-        endereco.push(bairro);
-    if (cidade != null && cidade.trim() != "")
-        endereco.push(cidade);
+  if (!numero || !complemento) {
+    alert('Número e complemento obrigatórios!');
+    return;
+  }
 
-    if (endereco.length <= 0)
-        return;
+  let rua = document.querySelector('input#ruaUsuario').value;
+  let bairro = document.querySelector('input#bairroUsuario').value;
+  let cidade = document.querySelector('input#cidadeUsuario').value;
+  let telefone = 40028922;
 
-    let usuario = new Usuario(nome, senha, email, endereco);
+  if (rua) endereco.push(rua);
+  if (bairro) endereco.push(bairro);
+  if (cidade) endereco.push(cidade);
 
-    let usuarioBanco = JSON.parse(localStorage.getItem("usuarios")) || {};
-    usuarioBanco["qualquermerda"] = usuario;
-    // colocar no banco de dados 
-    localStorage.setItem("usuarios", JSON.stringify(usuarioBanco));
+  if (endereco.length <= 0) {
+    alert('Endereço inválido!');
+    return;
+  }
+
+  // Monta string do endereço
+  let enderecoStr = endereco.join(', ') + ', ' + numero + ' ' + complemento;
+
+  let usuario = {
+    nome,
+    email,
+    senha,
+    telefone,   
+    endereco: enderecoStr
+  };
+
+  // salva no localStorage, se quiser manter
+  let usuarioBanco = JSON.parse(localStorage.getItem("usuarios")) || {};
+  usuarioBanco["qualquermerda"] = usuario;
+  localStorage.setItem("usuarios", JSON.stringify(usuarioBanco));
+
+  // envia para o backend
+  try {
+    let res = await fetch('http://localhost:3000/usuarios', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(usuario)
+    });
+
+    if (!res.ok) {
+      throw new Error('Erro ao cadastrar usuário');
+    }
+
+    alert('Usuário cadastrado com sucesso!');
+    // opcional: redirecionar ou limpar formulário
+  } catch (error) {
+    console.error(error);
+    alert('Falha ao cadastrar usuário');
+  }
 }
+

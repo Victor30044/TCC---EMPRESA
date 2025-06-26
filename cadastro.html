@@ -22,7 +22,7 @@
         </nav>
     </header>
     <main>
-        <form onsubmit="cadastrarUsuario(event)">
+        <form method="post" action="http://localhost:3000/usuarios" onsubmit="cadastrarUsuario(event)">
             <label for="nomeUsuario">Nome: <input type="text" name="nomeUsuario" id="nomeUsuario"></label><br>
             <label for="emailUsuario">Email: <input type="text" name="emailUsuario" id="emailUsuario"></label><br>
             <label for="senhaUsuario">Senha: <input type="password" name="senhaUsuario" id="senhaUsuario"></label><br>
