@@ -1,0 +1,112 @@
+@charset "UTF-8";
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Navbar com fundo laranja */
+nav.navbar {
+    background-color: #ff6f00 !important;
+    /* Laranja escuro */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+/* Estiliza a logo da navbar */
+.navbar-brand img {
+    height: 80px;
+    /* Ajusta a altura da imagem */
+    width: auto;
+    /* Mantém a proporção da largura */
+    object-fit: contain;
+    margin-left: 10px;
+    border-radius: 100%;
+    /* Espaço da esquerda */
+}
+
+/* Logo e links com texto branco */
+nav.navbar .navbar-brand,
+nav.navbar .nav-link {
+    color: #fff !important;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+/* Link ativo com sublinhado branco */
+nav.navbar .nav-link.active {
+    font-weight: 800;
+}
+
+/* Alterar cor do toggle button para o ícone hamburger (bootstrap padrão) */
+.navbar-toggler-icon {
+    filter: invert(1);
+    /* inverte o ícone para branco */
+}
+
+/* Ao passar mouse nos links */
+nav.navbar .nav-link:hover {
+    color: #ffe0b2 !important;
+    /* tom mais claro de laranja */
+}
+
+/* Container dos ícones do canto direito */
+.navbar-icons {
+    margin-right: 2rem;
+    /* ou ajuste conforme preferir */
+    gap: 2rem;
+    /* espaço entre os ícones */
+}
+
+.navbar-brand {
+    margin-left: 3rem;
+}
+
+/* Reduz o espaçamento vertical entre links no menu mobile */
+@media (max-width: 991.98px) {
+    .navbar-nav .nav-item {
+        margin-bottom: 0.3rem;
+        /* reduz o espaço entre os itens */
+    }
+
+    /* Coloca os ícones lado a lado no menu mobile */
+    .navbar-icons {
+        display: flex !important;
+        justify-content: center;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        gap: 1rem;
+    }
+
+    /* Centraliza os ícones no menu mobile */
+    .navbar-icons svg {
+        width: 28px;
+        height: 28px;
+    }
+}
+
+@media (max-width: 991.98px) {
+
+    /* Remove margens e padding excessivos entre os links no menu mobile */
+    .navbar-nav .nav-item {
+        margin-bottom: 0.2rem;
+        /* reduz distância entre os links */
+    }
+
+    .navbar-nav {
+        gap: 0 !important;
+        /* remove espaçamento extra entre os itens */
+    }
+
+    .navbar-collapse {
+        padding-bottom: 0.5rem;
+        /* reduz espaço geral do menu aberto */
+    }
+
+    .navbar-nav .nav-link {
+        padding-top: 0.4rem;
+        padding-bottom: 0.4rem;
+    }
+}

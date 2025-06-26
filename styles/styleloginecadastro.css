@@ -1,0 +1,98 @@
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #fff6ed;
+    color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+/* Formulário compacto */
+form {
+    background-color: #ffffff;
+    padding: 16px 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 380px;
+}
+
+/* Labels e inputs pequenos */
+label {
+    display: block;
+    font-size: 13px;
+    margin-bottom: 4px;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="number"] {
+    width: 100%;
+    padding: 4px 8px;
+    font-size: 13px;
+    margin-bottom: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Inputs desabilitados (endereços automáticos) */
+input:disabled {
+    background-color: #f4f4f4;
+    color: #666;
+}
+
+/* Botão compacto */
+input[type="submit"] {
+    width: 100%;
+    background-color: #ff8000;
+    color: white;
+    padding: 7px;
+    font-size: 14px;
+    border: none;
+    border-radius: 5px;
+    margin-top: 6px;
+    cursor: pointer;
+}
+
+input[type="submit"]:hover {
+    background-color: #e67300;
+}
+
+/* Agrupar endereço em duas colunas */
+.endereco-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+}
+
+.endereco-grid input {
+    width: 100%;
+}
+
+/* Responsivo ainda menor */
+@media (max-width: 500px) {
+    form {
+        padding: 12px 15px;
+    }
+
+    label {
+        font-size: 12px;
+    }
+
+    input {
+        font-size: 12px;
+        padding: 4px 6px;
+    }
+
+    input[type="submit"] {
+        font-size: 13px;
+    }
+}
