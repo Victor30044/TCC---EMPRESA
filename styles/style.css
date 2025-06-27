@@ -181,3 +181,135 @@ main#mainCarrinho .produto button:hover {
     background-color: #084298;
     cursor: pointer;
 }
+
+/* Cardapio*/
+
+
+
+
+
+
+#mainCardapio {
+    max-width: 960px;
+    margin: 2rem auto;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+    padding: 0 1rem;
+
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    /* espaçamento entre cards */
+    justify-content: center;
+    /* centraliza os cards */
+}
+
+/* Cada card ocupa 30% do container, com flex-grow para manter a largura */
+section {
+    
+}
+section h1 {
+    font-size: 50px;
+}
+/* Cards 3 por linha */
+section .produto {
+    flex: 1 1 calc(33.33% - 1rem);
+    max-width: calc(33.33% - 1rem);
+    margin: 1rem;
+    width: 20vw;
+    border-radius: 30px;
+    height: auto;
+    background: #cecece;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+/* Mantém o estilo das imagens, textos e botões */
+/* (sua estilização atual para .produto, img, button) */
+
+/* Responsividade */
+
+.produto img {
+    width: 80%;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin: 30px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+#id_produto3 h2 {
+    font-size: 28px;
+}
+
+#id_produto7 h2 {
+    font-size: 35px;
+}
+
+#id_produto13 h2 {
+    font-size: 30px;
+}
+
+.produto h2,
+.produto p,
+.produto button {
+    margin: 0 0 0.8rem 0;
+    flex-shrink: 0;
+}
+
+.produto button {
+    margin-top: auto;
+    width: 80%;
+    background-color: #e63946;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0.6rem 1.2rem;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.25s ease;
+    box-shadow: 0 4px 8px rgba(230, 57, 70, 0.3);
+}
+
+.produto button:hover {
+    background-color: #d62828;
+    box-shadow: 0 6px 14px rgba(214, 40, 40, 0.5);
+}
+
+/* Responsividade */
+@media screen and (max-width: 600px) {
+    #mainCardapio {
+        padding: 0;
+        justify-content: center;
+        flex-direction: column;
+        /* empilha as sections */
+        align-items: center;
+    }
+
+    /* Faz as sections ocuparem 100% da largura e empilharem os cards */
+    section {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    /* Cada card ocupa 80% da largura e empilhados */
+    section .produto {
+        flex: 0 1 80%;
+        /* largura 80% */
+        max-width: 80%;
+        width: 80vw;
+        height: auto;
+        margin: 1rem 0;
+        /* espaçamento vertical */
+    }
+
+    .produto img {
+        margin: 20px;
+        height: 200px;
+    }
+}

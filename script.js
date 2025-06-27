@@ -236,11 +236,11 @@ function menosQuantidade(cod) {
 // for (i = 0; i < cardapio.length; i++) {
 //     main.innerHTML +=
 //         `
-//     <div class="produto" id="id_produto${cardapio[i].cod_produto}">
-//     <h2>${cardapio[i].nome}</h2>
-//     <p>${cardapio[i].valor}</p>
-//     <button onclick="add(${cardapio[i].cod_produto})">Acionar ao carrinho</button>
-//     </div>
+// <div class="produto" id="id_produto${cardapio[i].cod_produto}">
+// <h2>${cardapio[i].nome}</h2>
+// <p>${cardapio[i].valor}</p>
+// <button onclick="add(${cardapio[i].cod_produto})">Acionar ao carrinho</button>
+// </div>
 //     `
 async function carregarCardapio() {
     console.log('carregarCardapio chamada');
@@ -248,31 +248,68 @@ async function carregarCardapio() {
         const res = await fetch('http://localhost:3000/produtos');
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
 
-        const pizzas = await res.json();
-        console.log('Pizzas carregadas:', pizzas);
+        const produtos = await res.json();
+        console.log('Produtos carregados:', produtos);
 
         const container = document.getElementById('mainCardapio');
         container.innerHTML = ''; // limpa antes
 
-        if (pizzas.length === 0) {
-            container.innerText = 'Nenhuma pizza cadastrada.';
+        if (produtos.length === 0) {
+            container.innerText = 'Nenhum produto cadastrado.';
             return;
         }
 
-        pizzas.forEach(pizza => {
-            const div = document.createElement('div');
-            div.className = 'pizza';
+        // Criar containers para cada categoria
+        const categorias = {
+            salgadas: document.createElement('section'),
+            brotinho: document.createElement('section'),
+            doces: document.createElement('section'),
+            bebidas: document.createElement('section'),
+            acompanhamentos: document.createElement('section'),
+        };
 
-            div.innerHTML = `
-            <div class="nome">${pizza.nome}</div>
-            <div class="descricao">${pizza.descricao || ''}</div>
-            <div class="preco">R$ ${pizza.preco.toFixed(2)}</div>
-        `;
+        // Criar títulos para cada categoria
+        categorias.salgadas.innerHTML = '<h1>Pizzas Salgadas</h1>';
+        categorias.brotinho.innerHTML = '<h1>Brotinho</h1>';
+        categorias.doces.innerHTML = '<h1>Pizzas Doces</h1>';
+        categorias.bebidas.innerHTML = '<h1>Bebidas</h1>';
+        categorias.acompanhamentos.innerHTML = '<h1>Acompanhamentos</h1>';
 
-            container.appendChild(div);
+        // Função simples para classificar produto em categoria
+        function classificarCategoria(produto) {
+            const nome = produto.nome.toLowerCase();
+
+            if (nome.includes('brotinho')) return 'brotinho';
+            if (nome.includes('refrigerante') || nome.includes('água') || nome.includes('suco')) return 'bebidas';
+            if (nome.includes('chocolate') || nome.includes('prestígio') || nome.includes('romeu') || nome.includes('banana') || nome.includes('oreo')) return 'doces';
+            if (nome.includes('batata') || nome.includes('borda') || nome.includes('molho')) return 'acompanhamentos';
+
+            // padrão: salgadas
+            return 'salgadas';
+        }
+
+        // Separar e inserir os produtos nas seções
+        produtos.forEach(produto => {
+            const categoria = classificarCategoria(produto);
+
+            const divitem = document.createElement('div');
+            divitem.className = 'produto';
+            divitem.id = `id_produto${produto.id}`;
+            divitem.innerHTML = `
+                <img src="../imagens/logo.jfif" alt="${produto.nome}" />
+                <h2>${produto.nome}</h2>
+                <p>R$ ${produto.preco.toFixed(2)}</p>
+                <button onclick="add(${produto.id})">Adicionar ao carrinho</button>
+            `;
+
+            categorias[categoria].appendChild(divitem);
         });
+
+        // Adiciona as seções ao container principal
+        Object.values(categorias).forEach(section => container.appendChild(section));
+
     } catch (error) {
-        console.error('Erro ao carregar pizzas:', error);
+        console.error('Erro ao carregar produtos:', error);
     }
 }
 
