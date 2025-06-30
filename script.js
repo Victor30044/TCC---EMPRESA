@@ -144,7 +144,7 @@ function carregarCadastro() {
 function atualizarProduto(cod) {
     console.log(`Funcao atualizarProduto${cod}`);
     // produtoatual = cardapio.find(Produto => Produto.cod_produto == cod);
-    produtoatual = produto;
+    const produtoatual = cardapio.find(p => p.cod_produto === cod);
     let divprotudoatual = document.querySelector(`div#id_produto${produtoatual.cod_produto}`)
     divprotudoatual.innerHTML = "";
     if (produtoatual.quantidade > 0) {
@@ -170,7 +170,7 @@ function add(cod) {
 }
 function addQuant(cod) {
     // let produtoatual = cardapio.find(p => p.cod_produto === cod);
-    produtoatual = produto;
+    const produtoatual = cardapio.find(p => p.cod_produto === cod);
     produtoatual.add();
 
     let carrinho = JSON.parse(localStorage.getItem("carrinho")) || {};
@@ -206,7 +206,7 @@ function removeQuant(cod) {
 function removeTudo(cod) {
     console.log(`Funcao remove${cod}`);
     // produtoatual = cardapio.find(Produto => Produto.cod_produto == cod);
-    produtoatual = produto;
+    const produtoatual = cardapio.find(p => p.cod_produto === cod);
     produtoatual.quantidade = 0;
     let carrinho = JSON.parse(localStorage.getItem("carrinho")) || {};
 
@@ -243,26 +243,30 @@ async function carregarCardapio() {
         const res = await fetch('http://localhost:3000/produtos');
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
 
-        const pizzas = await res.json();
-        console.log('Pizzas carregadas:', pizzas);
+        const produtos = await res.json(); // <- aqui você extrai os dados da resposta
 
         const container = document.getElementById('mainCardapio');
         container.innerHTML = ''; // limpa antes
 
-        if (pizzas.length === 0) {
+        if (produtos.length === 0) {
             container.innerText = 'Nenhuma pizza cadastrada.';
             return;
         }
 
-        pizzas.forEach(pizza => {
+        produtos.forEach(pizza => {
             const div = document.createElement('div');
             div.className = 'pizza';
 
             div.innerHTML = `
-            <div class="nome">${pizza.nome}</div>
-            <div class="descricao">${pizza.descricao || ''}</div>
-            <div class="preco">R$ ${pizza.preco.toFixed(2)}</div>
-        `;
+                <div class="produto" id="id_produto${pizza.cod_produto}">
+                    <h2>${pizza.nome}</h2>
+                    <span>${pizza.valor} x ${pizza.quantidade} | 
+                        <button onclick="addQuant(${pizza.cod_produto})">+</button>
+                        <button onclick="removeQuant(${pizza.cod_produto})">-</button>
+                    </span>
+                    <button onclick="removeTudo(${pizza.cod_produto})">REMOVER</button>
+                </div>
+            `;
 
             container.appendChild(div);
         });
@@ -271,61 +275,78 @@ async function carregarCardapio() {
     }
 }
 
-// function carregarCarrinho() {
-//     let carrinho = JSON.parse(localStorage.getItem("carrinho")) || {};
-//     let carrinhoKeys = Object.keys(carrinho);
-//     let main = document.querySelector('main#mainCarrinho');
 
-//     // Corrige duplicação de itens
-//     main.innerHTML = "";
+async function carregarCardapio() {
+    console.log('carregarCardapio chamada');
+    try {
+        const res = await fetch('http://localhost:3000/produtos');
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
 
-//     let total = 0;
+        const produtos = await res.json();
+        console.log('Produtos carregados:', produtos);
 
-//     for (let i = 0; i < carrinhoKeys.length; i++) {
-//         let produto = carrinho[carrinhoKeys[i]];
-//         if (produto.quantidade > 0) {
-//             main.innerHTML += `
-//                 <div class="produto" id="id_produto${produto.cod_produto}">
-//                     <h2>${produto.nome}</h2>
-//                     <span>${produto.valor} x ${produto.quantidade} | 
-//                         <button onclick="addQuant(${produto.cod_produto})">+</button> 
-//                         <button onclick="removeQuant(${produto.cod_produto})">-</button>
-//                     </span>
-//                     <button onclick="removeTudo(${produto.cod_produto})">REMOVER</button>
-//                 </div>
-//             `;
-//             total += produto.valor * produto.quantidade;
-//         }
-//     }
+        const container = document.getElementById('mainCardapio');
+        container.innerHTML = ''; // limpa antes
 
-//     // Remove div antiga do total, se houver
-//     let antigoFinalizar = document.getElementById('finalizarcompra');
-//     if (antigoFinalizar) antigoFinalizar.remove();
+        if (produtos.length === 0) {
+            container.innerText = 'Nenhum produto cadastrado.';
+            return;
+        }
 
-//     // Cria nova div do total
-//     let divfinalizarcompra = document.createElement('div');
-//     divfinalizarcompra.setAttribute('id', "finalizarcompra");
-//     divfinalizarcompra.innerHTML = `
-//     <p>Total: R$ ${total.toFixed(2)}</p>
-//     <button onclick="comprar()">Comprar</button>
-//     `;
-//     document.body.appendChild(divfinalizarcompra);
-// }
-produto = new Produto("Muzarella");
-function carregarCarrinhoTemporario() {
-    document.querySelector('main#mainCarrinho').innerHTML = `
-            <div class="produto" id="id_produto${produto.cod_produto}">
+        // Criar containers para cada categoria
+        const categorias = {
+            salgadas: document.createElement('section'),
+            brotinho: document.createElement('section'),
+            doces: document.createElement('section'),
+            bebidas: document.createElement('section'),
+            acompanhamentos: document.createElement('section'),
+        };
+
+        // Criar títulos para cada categoria
+        categorias.salgadas.innerHTML = '<h1>Pizzas Salgadas</h1>';
+        categorias.brotinho.innerHTML = '<h1>Brotinhos</h1>';
+        categorias.doces.innerHTML = '<h1>Pizzas Doces</h1>';
+        categorias.bebidas.innerHTML = '<h1>Bebidas</h1>';
+        categorias.acompanhamentos.innerHTML = '<h1>Acompanhamentos</h1>';
+
+        // Classificação de categorias por nome do produto
+        function classificarCategoria(produto) {
+            const nome = produto.nome.toLowerCase();
+
+            if (nome.includes('brotinho')) return 'brotinho';
+            if (nome.includes('chocolate') || nome.includes('prestígio') || nome.includes('banana') || nome.includes('romeu') || nome.includes('oreo')) return 'doces';
+            if (nome.includes('refrigerante') || nome.includes('suco') || nome.includes('água')) return 'bebidas';
+            if (nome.includes('batata') || nome.includes('molho') || nome.includes('borda')) return 'acompanhamentos';
+
+            return 'salgadas'; // padrão
+        }
+
+        // Separar e inserir os produtos nas seções
+        produtos.forEach(produto => {
+            const categoria = classificarCategoria(produto);
+
+            const divitem = document.createElement('div');
+            divitem.className = 'produto';
+            divitem.id = `id_produto${produto.id}`;
+            divitem.innerHTML = `
+                <img src="../imagens/logo.jfif" alt="${produto.nome}" />
                 <h2>${produto.nome}</h2>
-                <span>${produto.valor} x ${produto.quantidade} |
-                    <button onclick="addQuant(${produto.cod_produto})">+</button>
-                    <button onclick="removeQuant(${produto.cod_produto})">-</button><br>
-                </span>
-                <button onclick="removeTudo(${produto.cod_produto})">REMOVER</button>
-            </div>
-    `
-    localStorage.setItem('Carrinho', JSON.stringify);
-    exibirBotaoFinalizar()
+                <p>${produto.descricao || ''}</p>
+                <p><strong>R$ ${produto.preco.toFixed(2)}</strong></p>
+                <button onclick="add(${produto.id})">Adicionar ao carrinho</button>
+            `;
+
+            categorias[categoria].appendChild(divitem);
+        });
+
+        // Adiciona as seções ao container principal
+        Object.values(categorias).forEach(section => container.appendChild(section));
+
+    } catch (error) {
+        console.error('Erro ao carregar produtos:', error);
+    }
 }
+
 function comprar() {
     if (localStorage.getItem("pedido") == null)
         localStorage.setItem("pedido", JSON.stringify({}));
