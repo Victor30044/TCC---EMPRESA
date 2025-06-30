@@ -74,13 +74,10 @@ if (row.total === 0) {
 }
 
 // Rotas para produtos
+
 app.get('/produtos', (req, res) => {
-  try {
-    const produtos = db.prepare('SELECT * FROM Produtos').all();
-    res.json(produtos);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  const produtos = db.prepare('SELECT * FROM Produtos').all();
+  res.json(produtos);
 });
 
 app.post('/produtos', (req, res) => {
@@ -129,6 +126,21 @@ app.get('/usuarios', (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+app.get('/produtos/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+  if (isNaN(id)) return res.status(400).json({ error: 'ID inválido' });
+
+  try {
+    const produto = db.prepare('SELECT * FROM Produtos WHERE id = ?').get(id);
+    if (!produto) return res.status(404).json({ error: 'Produto não encontrado' });
+    res.json(produto);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+
 
 // Inicializa o servidor
 const PORT = process.env.PORT || 3000;

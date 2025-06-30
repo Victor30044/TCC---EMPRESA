@@ -3,12 +3,14 @@ let pedido;
 class Produto {
     static ultimoCodigo = 0;
 
+    // Construtor inicializa produto com nome, preco fixo, código incremental e quantidade do localStorage
     constructor(nome) {
         Produto.ultimoCodigo += 1;
-        this.cod_produto = Produto.ultimoCodigo;
+        this.id = Produto.ultimoCodigo;
         this.nome = nome;
-        this.valor = 49.9;
+        this.preco = 49.9;
 
+        // Busca quantidade no carrinho do localStorage, se não existir inicializa 0
         const carrinhoLS = JSON.parse(localStorage.getItem('carrinho')) || {};
         this.quantidade = carrinhoLS[`produto${this.cod_produto}`]
             ? carrinhoLS[`produto${this.cod_produto}`].quantidade
@@ -17,16 +19,19 @@ class Produto {
         if (this.quantidade < 0) this.quantidade = 0;
     }
 
+    // Incrementa quantidade do produto
     add() {
         this.quantidade++;
         console.log(`Quantidade após adicionar: ${this.quantidade}`);
     }
 
+    // Decrementa quantidade do produto (mínimo 0)
     menosQuantidade() {
         if (this.quantidade > 0) this.quantidade--;
         console.log(`Quantidade após remover: ${this.quantidade}`);
     }
 
+    // Remove um item (mesmo que menosQuantidade, mantém por compatibilidade)
     remove() {
         this.menosQuantidade();
     }
@@ -62,8 +67,8 @@ class Usuario {
     }
 
     // Pesquisa CEP usando API ViaCEP e insere script para callback
-    static pesquisaCEP(valor) {
-        var cep = valor.replace(/\D/g, '');
+    static pesquisaCEP(preco) {
+        var cep = preco.replace(/\D/g, '');
 
         if (cep != "") {
             var validacep = /^[0-9]{8}$/;
@@ -109,11 +114,11 @@ class Pedido {
             let produto = carrinho[chave];
             this.itens.push({
                 nome: produto.nome,
-                valor: produto.valor,
+                preco: produto.preco,
                 quantidade: produto.quantidade,
-                subtotal: produto.valor * produto.quantidade
+                subtotal: produto.preco * produto.quantidade
             });
-            this.total += produto.valor * produto.quantidade;
+            this.total += produto.preco * produto.quantidade;
         }
     }
 
@@ -125,7 +130,7 @@ class Pedido {
         console.log(`Total: R$ ${this.total.toFixed(2)}`);
         console.log(`Itens:`);
         this.itens.forEach(item => {
-            console.log(`- ${item.nome}: R$${item.valor} x ${item.quantidade} = R$${item.subtotal.toFixed(2)}`);
+            console.log(`- ${item.nome}: R$${item.preco} x ${item.quantidade} = R$${item.subtotal.toFixed(2)}`);
         });
     }
 }
@@ -142,249 +147,254 @@ function carregarCadastro() {
         localStorage.setItem("usuarios", JSON.stringify({}));
 }
 function atualizarProduto(cod) {
-    console.log(`Funcao atualizarProduto${cod}`);
-    // produtoatual = cardapio.find(Produto => Produto.cod_produto == cod);
-    const produtoatual = cardapio.find(p => p.cod_produto === cod);
-    let divprotudoatual = document.querySelector(`div#id_produto${produtoatual.cod_produto}`)
-    divprotudoatual.innerHTML = "";
-    if (produtoatual.quantidade > 0) {
-        divprotudoatual.innerHTML +=
-            `
-        <div class="produto" id="id_produto${produtoatual.cod_produto}">
+  console.log(`Função atualizarProduto ${cod}`);
+
+  let carrinho = JSON.parse(localStorage.getItem("carrinho")) || {};
+  const produtoatual = carrinho[`produto${cod}`];
+
+  const divProdutoAtual = document.querySelector(`div#id_produto${cod}`);
+
+  if (!divProdutoAtual) {
+    console.warn(`Div do produto ${cod} não encontrada no DOM.`);
+    return;
+  }
+
+  // Limpa o conteúdo da div antes de atualizar
+  divProdutoAtual.innerHTML = "";
+
+  if (produtoatual && produtoatual.quantidade > 0) {
+    divProdutoAtual.innerHTML = `
+      <div class="produto" id="id_produto${cod}">
         <h2>${produtoatual.nome}</h2>
-        <span>${produtoatual.valor} x ${produtoatual.quantidade} | <button onclick="addQuant(${produtoatual.cod_produto})">+</button> <button onclick="removeQuant(${produtoatual.cod_produto})">-</button></span>
-        ${produtoatual.quantidade > 0 ? `<button onclick="removeTudo(${produtoatual.cod_produto})">REMOVER</button>` : ""}
-        </div>
-        `
+        <span>${produtoatual.preco.toFixed(2)} x ${produtoatual.quantidade} 
+          | <button onclick="addQuant(${cod})">+</button> 
+          <button onclick="removeQuant(${cod})">-</button>
+        </span>
+        <button onclick="removeTudo(${cod})">REMOVER</button>
+      </div>
+    `;
+  } else {
+    // Se produto não existe ou quantidade é 0, pode limpar ou esconder a div
+    divProdutoAtual.innerHTML = ""; // opcional: ou divProdutoAtual.style.display = 'none';
+  }
+}
+
+async function add(cod) {
+  console.log(`Função ADD ${cod}`);
+
+  try {
+    // Busca o produto do backend pelo id
+    const response = await fetch(`http://localhost:3000/produtos/${cod}`);
+    if (!response.ok) {
+      console.error('Produto não encontrado no backend');
+      return;
     }
 
-}
-function add(cod) {
-    console.log(`Funcao ADD${cod}`);
-    produtoatual = cardapio.find(Produto => Produto.cod_produto == cod);
-    produtoatual.add();
+    const produtoatual = await response.json();
+
+    // Obtem carrinho do localStorage (objeto)
     let carrinho = JSON.parse(localStorage.getItem("carrinho")) || {};
 
-    carrinho[`produto${cod}`] = produtoatual;
+    // Se o produto já existe no carrinho, incrementa a quantidade
+    if (carrinho[`produto${cod}`]) {
+      carrinho[`produto${cod}`].quantidade += 1;
+    } else {
+      // Caso não exista, adiciona com quantidade = 1
+      carrinho[`produto${cod}`] = {
+        id: produtoatual.id,
+        nome: produtoatual.nome,
+        descricao: produtoatual.descricao,
+        preco: produtoatual.preco,
+        quantidade: 1
+      };
+    }
+
+    // Salva o carrinho atualizado no localStorage
     localStorage.setItem("carrinho", JSON.stringify(carrinho));
+
+    console.log('Produto adicionado ao carrinho:', carrinho[`produto${cod}`]);
+
+  } catch (error) {
+    console.error('Erro ao buscar produto:', error);
+  }
 }
+
 function addQuant(cod) {
-    // let produtoatual = cardapio.find(p => p.cod_produto === cod);
-    const produtoatual = cardapio.find(p => p.cod_produto === cod);
-    produtoatual.add();
+  let carrinho = JSON.parse(localStorage.getItem("carrinho")) || {};
 
-    let carrinho = JSON.parse(localStorage.getItem("carrinho")) || {};
-    carrinho[`produto${cod}`] = produtoatual;
+  // Verifica se o produto existe no carrinho
+  if (carrinho[`produto${cod}`]) {
+    carrinho[`produto${cod}`].quantidade += 1; // adiciona 1
+  } else {
+    // Caso não exista, opcional: buscar produto no backend e adicionar com quantidade 1
+    // Aqui deixo só um aviso para adaptar conforme seu fluxo
+    console.warn(`Produto ${cod} não encontrado no carrinho.`);
+    return;
+  }
 
-    localStorage.setItem("carrinho", JSON.stringify(carrinho));
-
-    atualizarProduto(cod);
-    // carregarCarrinho()
-    carregarCarrinhoTemporario();  // Atualiza total e exibição do carrinho
+  localStorage.setItem("carrinho", JSON.stringify(carrinho));
+  atualizarProduto(cod);
+  carregarCarrinho();
 }
 
 function removeQuant(cod) {
-    // let produtoatual = cardapio.find(p => p.cod_produto === cod);
-const produtoatual = cardapio.find(p => p.cod_produto === cod);
+  let carrinho = JSON.parse(localStorage.getItem("carrinho")) || {};
 
-    produtoatual.menosQuantidade();
+  if (!carrinho[`produto${cod}`]) {
+    console.warn(`Produto ${cod} não encontrado no carrinho.`);
+    return;
+  }
 
-    let carrinho = JSON.parse(localStorage.getItem("carrinho"));
+  carrinho[`produto${cod}`].quantidade -= 1;
 
-    if (produtoatual.quantidade <= 0) {
-        delete carrinho[`produto${cod}`];
-    } else {
-        carrinho[`produto${cod}`] = produtoatual;
-    }
+  if (carrinho[`produto${cod}`].quantidade <= 0) {
+    delete carrinho[`produto${cod}`]; // remove do carrinho
+  }
 
-    localStorage.setItem("carrinho", JSON.stringify(carrinho));
-
-    atualizarProduto(cod);
-    // carregarCarrinho()
-    carregarCarrinhoTemporario();  // Atualiza total e exibição do carrinho
+  localStorage.setItem("carrinho", JSON.stringify(carrinho));
+  atualizarProduto(cod);
+  carregarCarrinho();
 }
 
 function removeTudo(cod) {
-    console.log(`Funcao remove${cod}`);
-    // produtoatual = cardapio.find(Produto => Produto.cod_produto == cod);
-    const produtoatual = cardapio.find(p => p.cod_produto === cod);
-    produtoatual.quantidade = 0;
-    let carrinho = JSON.parse(localStorage.getItem("carrinho")) || {};
+  console.log(`Função removeTudo ${cod}`);
 
-    delete carrinho[`produto${produtoatual.cod_produto}`];
+  let carrinho = JSON.parse(localStorage.getItem("carrinho")) || {};
+
+  if (carrinho[`produto${cod}`]) {
+    delete carrinho[`produto${cod}`];
     localStorage.setItem("carrinho", JSON.stringify(carrinho));
-    divprotudoatual = document.querySelector(`div#id_produto${cod}`); console.log(divprotudoatual);
-    divprotudoatual.innerHTML = "";
-    // carregarCarrinho()
-    carregarCarrinhoTemporario();  // Atualiza total e exibição do carrinho
-}
-function menosQuantidade(cod) {
-    console.log(`Funcao MenosQuantidade${cod}`);
-    produtoatual = objetos.find(Produto => Produto.cod_produto == cod);
-    produtoatual.menosQuantidade();
-}
-// function carregarCardapio() {
-// if (localStorage.getItem("carrinho") == null)
-//     localStorage.setItem("carrinho", JSON.stringify({}));
+  } else {
+    console.warn(`Produto ${cod} não encontrado no carrinho.`);
+  }
 
-// let main = document.querySelector('main#mainCardapio');
+  // Remove a exibição do produto, se existir
+  const divProdutoAtual = document.querySelector(`div#id_produto${cod}`);
+  if (divProdutoAtual) divProdutoAtual.innerHTML = "";
 
-// for (i = 0; i < cardapio.length; i++) {
-//     main.innerHTML +=
-//         `
-//     <div class="produto" id="id_produto${cardapio[i].cod_produto}">
-//     <h2>${cardapio[i].nome}</h2>
-//     <p>${cardapio[i].valor}</p>
-//     <button onclick="add(${cardapio[i].cod_produto})">Acionar ao carrinho</button>
-//     </div>
-//     `
+  carregarCarrinho();
+}
+
+
 async function carregarCardapio() {
     console.log('carregarCardapio chamada');
     try {
         const res = await fetch('http://localhost:3000/produtos');
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
 
-        const produtos = await res.json(); // <- aqui você extrai os dados da resposta
-
+        let produtos = await res.json();
         const container = document.getElementById('mainCardapio');
-        container.innerHTML = ''; // limpa antes
+        container.innerHTML = '';
 
         if (produtos.length === 0) {
             container.innerText = 'Nenhuma pizza cadastrada.';
             return;
         }
 
-        produtos.forEach(pizza => {
-            const div = document.createElement('div');
-            div.className = 'pizza';
+        // Adiciona categoria manualmente
+        produtos = produtos.map(p => {
+            const nome = p.nome.toLowerCase();
+            let categoria = 'acompanhamento';
 
-            div.innerHTML = `
-                <div class="produto" id="id_produto${pizza.cod_produto}">
-                    <h2>${pizza.nome}</h2>
-                    <span>${pizza.valor} x ${pizza.quantidade} | 
-                        <button onclick="addQuant(${pizza.cod_produto})">+</button>
-                        <button onclick="removeQuant(${pizza.cod_produto})">-</button>
-                    </span>
-                    <button onclick="removeTudo(${pizza.cod_produto})">REMOVER</button>
-                </div>
-            `;
+            if (nome.includes('brotinho') || [
+                'calabresa', 'marguerita', 'frango', 'portuguesa', 'quatro', 'toscana', 'muçarela'
+            ].some(c => nome.includes(c))) {
+                categoria = 'salgada';
+            } else if (['chocolate', 'prestígio', 'romeu', 'banana', 'oreo'].some(c => nome.includes(c))) {
+                categoria = 'doce';
+            } else if (['refrigerante', 'suco', 'água'].some(c => nome.includes(c))) {
+                categoria = 'bebida';
+            }
 
-            container.appendChild(div);
+            return { ...p, categoria };
         });
+
+        // Agrupa por categoria
+        const categorias = {};
+        produtos.forEach(produto => {
+            const cat = produto.categoria;
+            if (!categorias[cat]) categorias[cat] = [];
+            categorias[cat].push(produto);
+        });
+
+        for (const categoria in categorias) {
+            const secao = document.createElement('section');
+            secao.className = 'categoria';
+
+            const titulo = document.createElement('h2');
+            titulo.textContent = categoria.toUpperCase();
+            secao.appendChild(titulo);
+
+            categorias[categoria].forEach(produto => {
+                const div = document.createElement('div');
+                div.className = 'produto';
+                div.id = `id_produto${produto.id}`;
+                div.innerHTML = `
+                    <img src="../imagens/logo.jfif">
+                    <h3>${produto.nome}</h3>
+                    <p>R$ ${produto.preco.toFixed(2)}</p>
+                    <button onclick="add(${produto.id})">Adicionar ao carrinho</button>
+                `;
+
+                secao.appendChild(div);
+            });
+
+            container.appendChild(secao);
+        }
     } catch (error) {
         console.error('Erro ao carregar pizzas:', error);
     }
 }
 
-function carregarCarrinhoTemporario() {
-    const carrinho = JSON.parse(localStorage.getItem('carrinho')) || {};
-    const container = document.querySelector('main#mainCarrinho');
-    container.innerHTML = '';
+
+function carregarCarrinho() {
+    let carrinho = JSON.parse(localStorage.getItem("carrinho")) || {};
+    let carrinhoKeys = Object.keys(carrinho);
+    let main = document.querySelector('main#mainCarrinho');
+
+    // Corrige duplicação de itens
+    main.innerHTML = "";
 
     let total = 0;
 
-    for (let chave in carrinho) {
-        const produto = carrinho[chave];
-
-        // Pula se a quantidade for zero ou menor
-        if (produto.quantidade <= 0) continue;
-
-        container.innerHTML += `
-            <div class="produto" id="id_produto${produto.cod_produto}">
-                <h2>${produto.nome}</h2>
-                <span>R$ ${produto.valor.toFixed(2)} x ${produto.quantidade} |
-                    <button onclick="addQuant(${produto.cod_produto})">+</button>
-                    <button onclick="removeQuant(${produto.cod_produto})">-</button><br>
-                </span>
-                <button onclick="removeTudo(${produto.cod_produto})">REMOVER</button>
-            </div>
-        `;
-
-        total += produto.valor * produto.quantidade;
-    }
-
-    // Exibe total e botão de finalizar
-    const divTotal = document.createElement('div');
-    divTotal.className = 'total-compra';
-    divTotal.innerHTML = `
-        <p><strong>Total: R$ ${total.toFixed(2)}</strong></p>
-    `;
-    container.appendChild(divTotal);
-
-    exibirBotaoFinalizar(); // Mostra o botão se houver itens
-}
-
-async function carregarCardapio() {
-    console.log('carregarCardapio chamada');
-    try {
-        const res = await fetch('http://localhost:3000/produtos');
-        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-
-        const produtos = await res.json();
-        console.log('Produtos carregados:', produtos);
-
-        const container = document.getElementById('mainCardapio');
-        container.innerHTML = ''; // limpa antes
-
-        if (produtos.length === 0) {
-            container.innerText = 'Nenhum produto cadastrado.';
-            return;
-        }
-
-        // Criar containers para cada categoria
-        const categorias = {
-            salgadas: document.createElement('section'),
-            brotinho: document.createElement('section'),
-            doces: document.createElement('section'),
-            bebidas: document.createElement('section'),
-            acompanhamentos: document.createElement('section'),
-        };
-
-        // Criar títulos para cada categoria
-        categorias.salgadas.innerHTML = '<h1>Pizzas Salgadas</h1>';
-        categorias.brotinho.innerHTML = '<h1>Brotinhos</h1>';
-        categorias.doces.innerHTML = '<h1>Pizzas Doces</h1>';
-        categorias.bebidas.innerHTML = '<h1>Bebidas</h1>';
-        categorias.acompanhamentos.innerHTML = '<h1>Acompanhamentos</h1>';
-
-        // Classificação de categorias por nome do produto
-        function classificarCategoria(produto) {
-            const nome = produto.nome.toLowerCase();
-
-            if (nome.includes('brotinho')) return 'brotinho';
-            if (nome.includes('chocolate') || nome.includes('prestígio') || nome.includes('banana') || nome.includes('romeu') || nome.includes('oreo')) return 'doces';
-            if (nome.includes('refrigerante') || nome.includes('suco') || nome.includes('água')) return 'bebidas';
-            if (nome.includes('batata') || nome.includes('molho') || nome.includes('borda')) return 'acompanhamentos';
-
-            return 'salgadas'; // padrão
-        }
-
-        // Separar e inserir os produtos nas seções
-        produtos.forEach(produto => {
-            const categoria = classificarCategoria(produto);
-
-            const divitem = document.createElement('div');
-            divitem.className = 'produto';
-            divitem.id = `id_produto${produto.id}`;
-            divitem.innerHTML = `
-                <img src="../imagens/logo.jfif" alt="${produto.nome}" />
-                <h2>${produto.nome}</h2>
-                <p>${produto.descricao || ''}</p>
-                <p><strong>R$ ${produto.preco.toFixed(2)}</strong></p>
-                <button onclick="add(${produto.id})">Adicionar ao carrinho</button>
+    for (let i = 0; i < carrinhoKeys.length; i++) {
+        let produto = carrinho[carrinhoKeys[i]];
+        if (produto.quantidade > 0) {
+            main.innerHTML += `
+                <div class="produto" id="id_produto${produto.id}">
+                    <h2>${produto.nome}</h2>
+                    <span>${produto.preco} x ${produto.quantidade} | 
+                        <button onclick="addQuant(${produto.id})">+</button> 
+                        <button onclick="removeQuant(${produto.id})">-</button>
+                    </span>
+                    <button onclick="removeTudo(${produto.id})">REMOVER</button>
+                </div>
             `;
-
-            categorias[categoria].appendChild(divitem);
-        });
-
-        // Adiciona as seções ao container principal
-        Object.values(categorias).forEach(section => container.appendChild(section));
-
-    } catch (error) {
-        console.error('Erro ao carregar produtos:', error);
+            total += produto.preco * produto.quantidade;
+        }
     }
-}
 
+    // Remove div antiga do total, se houver
+    let antigoFinalizar = document.getElementById('finalizarcompra');
+    if (antigoFinalizar) antigoFinalizar.remove();
+
+    // Cria nova div do total
+    exibirBotaoFinalizar()
+}
+// function carregarCarrinho() {
+//     document.querySelector('main#mainCarrinho').innerHTML = `
+//             <div class="produto" id="id_produto${produto.cod_produto}">
+//                 <h2>${produto.nome}</h2>
+//                 <span>${produto.preco} x ${produto.quantidade} |
+//                     <button onclick="addQuant(${produto.cod_produto})">+</button>
+//                     <button onclick="removeQuant(${produto.cod_produto})">-</button><br>
+//                 </span>
+//                 <button onclick="removeTudo(${produto.cod_produto})">REMOVER</button>
+//             </div>
+//     `
+//     localStorage.setItem('Carrinho', JSON.stringify);
+//     exibirBotaoFinalizar()
+// }
 function comprar() {
     if (localStorage.getItem("pedido") == null)
         localStorage.setItem("pedido", JSON.stringify({}));
@@ -525,11 +535,11 @@ function mostrarCamposFaltando() {
 
     function checar(id, nomeCampo, validacao = null) {
         const input = document.querySelector(`#${id}`);
-        const valor = input.value.trim();
+        const preco = input.value.trim();
 
-        let valido = valor !== '';
-        if (validacao && valor !== '') {
-            valido = validacao(valor);
+        let valido = preco !== '';
+        if (validacao && preco !== '') {
+            valido = validacao(preco);
         }
 
         if (!valido) {
@@ -592,15 +602,11 @@ function exibirBotaoFinalizar() {
 }
 
 function abrirModalPagamento() {
-    // Remove o modal anterior, se existir
-    const existente = document.getElementById("modalPagamento");
-    if (existente) existente.remove();
-
     const modalHtml = `
     <div class="modal fade" id="modalPagamento" tabindex="-1" aria-labelledby="modalPagamentoLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
-          <form id="formPagamento">
+          <form onsubmit="processarPagamento(event)">
             <div class="modal-header">
               <h5 class="modal-title" id="modalPagamentoLabel">Forma de Pagamento</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
@@ -616,11 +622,11 @@ function abrirModalPagamento() {
               </div>
 
               <div id="dadosCartao" class="mt-3">
-                <label for="numeroCartao">Número do Cartão</label>
+                <label>Número do Cartão</label>
                 <input class="form-control" type="text" id="numeroCartao" required>
-                <label class="mt-2" for="validadeCartao">Validade</label>
+                <label class="mt-2">Validade</label>
                 <input class="form-control" type="month" id="validadeCartao" required>
-                <label class="mt-2" for="cvvCartao">CVV</label>
+                <label class="mt-2">CVV</label>
                 <input class="form-control" type="text" id="cvvCartao" required>
               </div>
             </div>
@@ -639,19 +645,28 @@ function abrirModalPagamento() {
     const modal = new bootstrap.Modal(document.getElementById("modalPagamento"));
     modal.show();
 
-    // Alterna a exibição dos campos do cartão
+    // Oculta campos de cartão se usuário escolher "entrega"
     document.getElementById("credito").addEventListener("change", () => {
         document.getElementById("dadosCartao").style.display = "block";
     });
-
     document.getElementById("entrega").addEventListener("change", () => {
         document.getElementById("dadosCartao").style.display = "none";
     });
+    document.getElementById('pagarCartao').addEventListener('click', () => {
+        const numero = document.getElementById('numeroCartao').value.replace(/\s/g, '');
 
-    // Anexa evento de submit ao formulário do modal
-    document.getElementById("formPagamento").addEventListener("submit", processarPagamento);
+        const bandeira = detectarBandeira(numero);
+
+        if (!bandeira) {
+            alert('Número de cartão inválido!');
+            return;
+        }
+
+        alert(`Pagamento aprovado com cartão ${bandeira}`);
+        fecharModalPagamento();
+    });
+
 }
-
 
 function processarPagamento(event) {
     event.preventDefault();
