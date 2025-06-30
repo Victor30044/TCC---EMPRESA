@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - Ma que Bella!</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(120deg, #fefefe, #f8f1e7);
+      padding: 20px;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: row;
+      width: 100%;
+      max-width: 900px;
+      background: #fff;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.1);
+      flex-wrap: wrap;
+    }
+
+    .left,
+    .right {
+      flex: 1 1 400px;
+      min-width: 300px;
+    }
+
+   .left {
+  background: linear-gradient(to top, #006400, #830808 30%, #cc0000);
+  padding: 50px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+}
+
+.left h1 {
+  font-size: 32px;
+  margin-bottom: 16px;
+  color: #ffffff;
+  text-shadow: 2px 2px 5px rgba(0,0,0,0.7);
+}
+
+.left p {
+  font-size: 16px;
+  font-weight: 500;
+  color: #ffffff;
+  text-shadow: 1px 1px 4px rgba(0,0,0,0.6);
+}
+
+
+    .right {
+      padding: 40px;
+      background-color: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    h2 {
+      font-size: 28px;
+      margin-bottom: 30px;
+      font-weight: 600;
+      color: #333;
+      text-align: center;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 20px;
+    }
+
+    .input-group input {
+      padding: 12px 16px;
+      border-radius: 30px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+      transition: 0.3s;
+    }
+
+    .input-group input:focus {
+      outline: none;
+      border-color: #008000;
+      box-shadow: 0 0 5px rgba(0, 128, 0, 0.3);
+    }
+
+    .btn {
+      background: linear-gradient(to right, #008000, #ff0000);
+      color: white;
+      border: none;
+      padding: 14px;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: 0.3s ease;
+      width: 100%;
+    }
+
+    .btn:hover {
+      background: linear-gradient(to right, #006400, #cc0000);
+      transform: scale(1.03);
+    }
+
+    .extra-option {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 14px;
+    }
+
+    .extra-option a {
+      color: #008000;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .extra-option a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+        border-radius: 0;
+      }
+
+      .left,
+      .right {
+        padding: 30px 20px;
+      }
+
+      .left h1 {
+        font-size: 28px;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .left h1 {
+        font-size: 24px;
+      }
+
+      .btn {
+        font-size: 14px;
+        padding: 12px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="left">
+      <h1>Ma que Bella!</h1>
+      <p>Entre e inicie uma experiência autêntica.</p>
+    </div>
+    <div class="right">
+      <form action="https://formsubmit.co/seuemail@exemplo.com" method="POST">
+        <h2>Entrar na sua conta</h2>
+
+        <div class="input-group">
+          <label for="loginEmail">Email ou nome de usuário</label>
+          <input required type="text" name="loginEmail" id="loginEmail">
+        </div>
+
+        <div class="input-group">
+          <label for="loginSenha">Senha</label>
+          <input required type="password" name="loginSenha" id="loginSenha">
+        </div>
+
+        <!-- FormSubmit opções -->
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_next" value="https://sua-pagina-de-obrigado.com">
+
+        <button class="btn" type="submit">Entrar</button>
+
+        <div class="extra-option">
+          Ainda não tem uma conta?
+          <a href="cadastro.html">Cadastre-se aqui</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+
+</html>

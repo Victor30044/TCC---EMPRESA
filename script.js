@@ -3,14 +3,12 @@ let pedido;
 class Produto {
     static ultimoCodigo = 0;
 
-    // Construtor inicializa produto com nome, valor fixo, código incremental e quantidade do localStorage
     constructor(nome) {
         Produto.ultimoCodigo += 1;
         this.cod_produto = Produto.ultimoCodigo;
         this.nome = nome;
         this.valor = 49.9;
 
-        // Busca quantidade no carrinho do localStorage, se não existir inicializa 0
         const carrinhoLS = JSON.parse(localStorage.getItem('carrinho')) || {};
         this.quantidade = carrinhoLS[`produto${this.cod_produto}`]
             ? carrinhoLS[`produto${this.cod_produto}`].quantidade
@@ -19,19 +17,16 @@ class Produto {
         if (this.quantidade < 0) this.quantidade = 0;
     }
 
-    // Incrementa quantidade do produto
     add() {
         this.quantidade++;
         console.log(`Quantidade após adicionar: ${this.quantidade}`);
     }
 
-    // Decrementa quantidade do produto (mínimo 0)
     menosQuantidade() {
         if (this.quantidade > 0) this.quantidade--;
         console.log(`Quantidade após remover: ${this.quantidade}`);
     }
 
-    // Remove um item (mesmo que menosQuantidade, mantém por compatibilidade)
     remove() {
         this.menosQuantidade();
     }

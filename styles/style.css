@@ -8,7 +8,7 @@
 
 /* Navbar com fundo laranja */
 nav.navbar {
-    background-color: #ff6f00 !important;
+    background-color: #1E5631 !important;
     /* Laranja escuro */
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
     padding-top: 1rem;
@@ -27,13 +27,50 @@ nav.navbar {
     /* Espaço da esquerda */
 }
 
+.hero {
+ position: relative;
+  background: url(1074058.jpg) no-repeat center center/cover;
+  height: 100vh;
+  text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.6); /* escurece a imagem */
+  z-index: 1;
+}
+
+.hero .container {
+  position: relative;
+  z-index: 2;
+}
+.lead  {
+    font-size: 1.6rem;
+    /* Tamanho da fonte do texto */
+    color: #fff;
+    /* Cor do texto */
+    margin-top: 10px;
+    /* Espaçamento acima do texto */
+    margin-bottom: 20px;
+    /* Espaçamento abaixo do texto */
+    font-weight: 400;
+}
+
+
 /* Logo e links com texto branco */
 nav.navbar .navbar-brand,
 nav.navbar .nav-link {
     color: #fff !important;
     font-weight: 600;
     text-transform: uppercase;
+    transition: transform 0.2s;
+    font-size: 1.2rem;
 }
+
 
 /* Link ativo com sublinhado branco */
 nav.navbar .nav-link.active {
@@ -48,7 +85,9 @@ nav.navbar .nav-link.active {
 
 /* Ao passar mouse nos links */
 nav.navbar .nav-link:hover {
-    color: #ffe0b2 !important;
+    color: #ffffff !important;
+    transform: scale(1.15);
+    transition: transform 0.2s;
     /* tom mais claro de laranja */
 }
 

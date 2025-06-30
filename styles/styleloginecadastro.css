@@ -1,98 +1,111 @@
-/* Reset básico */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-    font-family: Arial, Helvetica, sans-serif;
-    background-color: #fff6ed;
-    color: #333;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  background: linear-gradient(135deg, #f8f1e7, #e0d8cc);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  position: relative;
 }
 
-/* Formulário compacto */
+/* Estilo do card/formulário */
 form {
-    background-color: #ffffff;
-    padding: 16px 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 380px;
+  background: #fefefe;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 0 25px rgba(198, 40, 40, 0.3);
+  border: 3px solid #c62828;
+  max-width: 480px;
+  width: 90%;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  animation: aparecer 0.6s ease-out both;
 }
 
-/* Labels e inputs pequenos */
+/* Animação suave de entrada */
+@keyframes aparecer {
+  0% {
+    opacity: 0;
+    transform: translateY(60px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Labels com destaque */
 label {
-    display: block;
-    font-size: 13px;
-    margin-bottom: 4px;
+  font-weight: bold;
+  font-size: 15px;
+  color: #2e7d32;
 }
 
+/* Inputs estilosos */
 input[type="text"],
 input[type="password"],
-input[type="number"] {
-    width: 100%;
-    padding: 4px 8px;
-    font-size: 13px;
-    margin-bottom: 8px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+input[type="number"],
+input[type="email"] {
+  padding: 12px;
+  border-radius: 10px;
+  border: 1.5px solid #ccc;
+  transition: all 0.3s ease;
+  font-size: 15px;
+  background-color: #ffffff;
 }
 
-/* Inputs desabilitados (endereços automáticos) */
+input:focus {
+  border-color: #c62828;
+  box-shadow: 0 0 10px rgba(198, 40, 40, 0.4);
+  outline: none;
+}
+
 input:disabled {
-    background-color: #f4f4f4;
-    color: #666;
+  background-color: #eee;
+  color: #555;
 }
 
-/* Botão compacto */
+/* Grid dos campos de endereço */
+.endereco-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+/* Botão com identidade forte */
 input[type="submit"] {
-    width: 100%;
-    background-color: #ff8000;
-    color: white;
-    padding: 7px;
-    font-size: 14px;
-    border: none;
-    border-radius: 5px;
-    margin-top: 6px;
-    cursor: pointer;
+  background: linear-gradient(to right, #c62828, #b71c1c);
+  color: #fff;
+  border: none;
+  padding: 14px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 10px;
+  box-shadow: 0 0 15px rgba(198, 40, 40, 0.5);
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 input[type="submit"]:hover {
-    background-color: #e67300;
+  background: linear-gradient(to right, #d32f2f, #e53935);
+  transform: scale(1.05);
+  box-shadow: 0 0 25px rgba(198, 40, 40, 0.6);
 }
 
-/* Agrupar endereço em duas colunas */
-.endereco-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 6px;
-}
+/* Responsividade */
+@media (max-width: 600px) {
+  .endereco-grid {
+    grid-template-columns: 1fr;
+  }
 
-.endereco-grid input {
-    width: 100%;
-}
-
-/* Responsivo ainda menor */
-@media (max-width: 500px) {
-    form {
-        padding: 12px 15px;
-    }
-
-    label {
-        font-size: 12px;
-    }
-
-    input {
-        font-size: 12px;
-        padding: 4px 6px;
-    }
-
-    input[type="submit"] {
-        font-size: 13px;
-    }
+  form {
+    padding: 30px 20px;
+  }
 }
