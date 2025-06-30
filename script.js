@@ -185,7 +185,8 @@ function addQuant(cod) {
 
 function removeQuant(cod) {
     // let produtoatual = cardapio.find(p => p.cod_produto === cod);
-    produtoatual = produto
+const produtoatual = cardapio.find(p => p.cod_produto === cod);
+
     produtoatual.menosQuantidade();
 
     let carrinho = JSON.parse(localStorage.getItem("carrinho"));
@@ -275,6 +276,43 @@ async function carregarCardapio() {
     }
 }
 
+function carregarCarrinhoTemporario() {
+    const carrinho = JSON.parse(localStorage.getItem('carrinho')) || {};
+    const container = document.querySelector('main#mainCarrinho');
+    container.innerHTML = '';
+
+    let total = 0;
+
+    for (let chave in carrinho) {
+        const produto = carrinho[chave];
+
+        // Pula se a quantidade for zero ou menor
+        if (produto.quantidade <= 0) continue;
+
+        container.innerHTML += `
+            <div class="produto" id="id_produto${produto.cod_produto}">
+                <h2>${produto.nome}</h2>
+                <span>R$ ${produto.valor.toFixed(2)} x ${produto.quantidade} |
+                    <button onclick="addQuant(${produto.cod_produto})">+</button>
+                    <button onclick="removeQuant(${produto.cod_produto})">-</button><br>
+                </span>
+                <button onclick="removeTudo(${produto.cod_produto})">REMOVER</button>
+            </div>
+        `;
+
+        total += produto.valor * produto.quantidade;
+    }
+
+    // Exibe total e botão de finalizar
+    const divTotal = document.createElement('div');
+    divTotal.className = 'total-compra';
+    divTotal.innerHTML = `
+        <p><strong>Total: R$ ${total.toFixed(2)}</strong></p>
+    `;
+    container.appendChild(divTotal);
+
+    exibirBotaoFinalizar(); // Mostra o botão se houver itens
+}
 
 async function carregarCardapio() {
     console.log('carregarCardapio chamada');
@@ -554,11 +592,15 @@ function exibirBotaoFinalizar() {
 }
 
 function abrirModalPagamento() {
+    // Remove o modal anterior, se existir
+    const existente = document.getElementById("modalPagamento");
+    if (existente) existente.remove();
+
     const modalHtml = `
     <div class="modal fade" id="modalPagamento" tabindex="-1" aria-labelledby="modalPagamentoLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
-          <form onsubmit="processarPagamento(event)">
+          <form id="formPagamento">
             <div class="modal-header">
               <h5 class="modal-title" id="modalPagamentoLabel">Forma de Pagamento</h5>
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
@@ -574,11 +616,11 @@ function abrirModalPagamento() {
               </div>
 
               <div id="dadosCartao" class="mt-3">
-                <label>Número do Cartão</label>
+                <label for="numeroCartao">Número do Cartão</label>
                 <input class="form-control" type="text" id="numeroCartao" required>
-                <label class="mt-2">Validade</label>
+                <label class="mt-2" for="validadeCartao">Validade</label>
                 <input class="form-control" type="month" id="validadeCartao" required>
-                <label class="mt-2">CVV</label>
+                <label class="mt-2" for="cvvCartao">CVV</label>
                 <input class="form-control" type="text" id="cvvCartao" required>
               </div>
             </div>
@@ -597,28 +639,19 @@ function abrirModalPagamento() {
     const modal = new bootstrap.Modal(document.getElementById("modalPagamento"));
     modal.show();
 
-    // Oculta campos de cartão se usuário escolher "entrega"
+    // Alterna a exibição dos campos do cartão
     document.getElementById("credito").addEventListener("change", () => {
         document.getElementById("dadosCartao").style.display = "block";
     });
+
     document.getElementById("entrega").addEventListener("change", () => {
         document.getElementById("dadosCartao").style.display = "none";
     });
-    document.getElementById('pagarCartao').addEventListener('click', () => {
-        const numero = document.getElementById('numeroCartao').value.replace(/\s/g, '');
 
-        const bandeira = detectarBandeira(numero);
-
-        if (!bandeira) {
-            alert('Número de cartão inválido!');
-            return;
-        }
-
-        alert(`Pagamento aprovado com cartão ${bandeira}`);
-        fecharModalPagamento();
-    });
-
+    // Anexa evento de submit ao formulário do modal
+    document.getElementById("formPagamento").addEventListener("submit", processarPagamento);
 }
+
 
 function processarPagamento(event) {
     event.preventDefault();
