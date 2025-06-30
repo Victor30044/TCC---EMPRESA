@@ -143,8 +143,8 @@ sabores.forEach(sabor => {
 })
 
 function carregarCadastro() {
-    if (localStorage.getItem("usuarios") == null)
-        localStorage.setItem("usuarios", JSON.stringify({}));
+    if (localStorage.getItem("usuario") == null)
+        localStorage.setItem("usuario", JSON.stringify({}));
 }
 function atualizarProduto(cod) {
   console.log(`Função atualizarProduto ${cod}`);
@@ -363,7 +363,7 @@ function carregarCarrinho() {
             main.innerHTML += `
                 <div class="produto" id="id_produto${produto.id}">
                     <h2>${produto.nome}</h2>
-                    <span>${produto.preco} x ${produto.quantidade} | 
+                    <span>R$${produto.preco} x ${produto.quantidade} | 
                         <button onclick="addQuant(${produto.id})">+</button> 
                         <button onclick="removeQuant(${produto.id})">-</button>
                     </span>
@@ -459,7 +459,7 @@ async function cadastrarUsuario(event) {
     // salva no localStorage, se quiser manter
     let usuarioBanco = JSON.parse(localStorage.getItem("usuarios")) || {};
     usuarioBanco["qualquermerda"] = usuario;
-    localStorage.setItem("usuarios", JSON.stringify(usuarioBanco));
+    localStorage.setItem("usuario", JSON.stringify(usuarioBanco));
 
     // envia para o backend
     try {
@@ -595,10 +595,82 @@ function exibirBotaoFinalizar() {
         btn.innerText = "Finalizar Compra";
         btn.className = "btn btn-success mt-3";
         btn.id = "btnFinalizarCompra";
-        btn.onclick = abrirModalPagamento;
+        btn.onclick = abrirResumoPedido;
 
         main.appendChild(btn);
     }
+}
+function abrirResumoPedido() {
+  const carrinho = JSON.parse(localStorage.getItem("carrinho")) || {};
+  if (Object.keys(carrinho).length === 0) {
+    alert("Carrinho vazio.");
+    return;
+  }
+
+  let total = 0;
+  let listaHtml = "";
+
+  for (let key in carrinho) {
+    const produto = carrinho[key];
+    const subtotal = produto.preco * produto.quantidade; 
+    total += subtotal;
+
+    listaHtml += `
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        ${produto.quantidade}x ${produto.nome}
+        <span>R$ ${subtotal.toFixed(2)}</span>
+      </li>
+    `;
+  }
+
+  const frete = 5.00;
+  const totalComFrete = total + frete;
+
+  const modalResumoHtml = `
+    <div class="modal fade" id="modalResumoPedido" tabindex="-1" aria-labelledby="modalResumoLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalResumoLabel">Resumo do Pedido</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+          </div>
+          <div class="modal-body">
+            <ul class="list-group">
+              ${listaHtml}
+              <li class="list-group-item d-flex justify-content-between">
+                <strong>Frete</strong>
+                <span>R$ ${frete.toFixed(2)}</span>
+              </li>
+              <li class="list-group-item d-flex justify-content-between">
+                <strong>Total</strong>
+                <span><strong>R$ ${totalComFrete.toFixed(2)}</strong></span>
+              </li>
+            </ul>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="button" class="btn btn-primary" id="btnContinuarPagamento">Continuar para Pagamento</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.body.insertAdjacentHTML("beforeend", modalResumoHtml);
+
+  const modalResumo = new bootstrap.Modal(document.getElementById("modalResumoPedido"));
+  modalResumo.show();
+
+  // Evento: continuar para pagamento
+  document.getElementById("btnContinuarPagamento").addEventListener("click", () => {
+    modalResumo.hide();
+    abrirModalPagamento(); // abre o modal de pagamento original
+  });
+
+  // Remove o modal do DOM quando ele for fechado
+  document.getElementById("modalResumoPedido").addEventListener('hidden.bs.modal', () => {
+    document.getElementById("modalResumoPedido").remove();
+  });
 }
 
 function abrirModalPagamento() {
@@ -708,11 +780,53 @@ function processarPagamento(event, modal) {
     numeroCartaoInput.required = false;
     validadeCartaoInput.required = false;
     cvvCartaoInput.required = false;
-
-    alert("Pagamento será feito na entrega.");
   }
 
   // restante do código para criar pedido...
+  if (tipo === "credito") {
+  // ... validação do cartão ...
+
+  alert(`Pagamento com cartão ${bandeira} aprovado!`);
+} else {
+  alert("Pagamento será feito na entrega.");
+}
+
+// Apenas fecha o modal de pagamento
+modal.hide();  // Isso já ativa o listener para .remove()
+// Pega os dados do carrinho e usuário
+const carrinho = JSON.parse(localStorage.getItem("carrinho")) || {};
+const itens = Object.values(carrinho);
+const frete = 5;
+const total = itens.reduce((acc, item) => acc + item.valor * item.quantidade, 0) + frete;
+
+const usuario = JSON.parse(localStorage.getItem("usuarios")["usuario"]);
+if (!usuario || !usuario.id) {
+  alert("Usuário não está logado.");
+  return;
+}
+
+// Envia o pedido para o backend
+fetch("http://localhost:3000/pedidos", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+        usuario_id: usuario.id,
+        itens,
+    total
+})
+})
+.then(res => res.json())
+.then(data => {
+    console.log("Pedido salvo:", data);
+    alert(`Pedido realizado com sucesso! Código do pedido: ${data.id_pedido}`);
+})
+.catch(err => {
+    console.error("Erro ao enviar pedido:", err);
+    alert("Erro ao salvar pedido no banco.");
+});
+localStorage.removeItem("carrinho");
+carregarCarrinho()
+
 }
 
 // Detectar bandeira do cartão com regex

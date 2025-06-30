@@ -126,6 +126,33 @@ app.get('/usuarios', (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+app.post('/pedidos', (req, res) => {
+  const { usuario_id, itens, total } = req.body;
+
+  if (!usuario_id || !Array.isArray(itens) || total === undefined) {
+    return res.status(400).json({ error: 'Dados do pedido incompletos ou inválidos' });
+  }
+
+  try {
+    const stmt = db.prepare(`
+      INSERT INTO Pedidos (usuario_id, itens, total)
+      VALUES (?, ?, ?)
+    `);
+    const info = stmt.run(usuario_id, JSON.stringify(itens), total);
+
+    res.status(200).json({
+      mensagem: 'Pedido salvo com sucesso!',
+      id_pedido: info.lastInsertRowid
+    });
+  } catch (err) {
+    console.error("Erro ao salvar pedido no banco:", err);
+    res.status(500).json({ error: 'Erro ao salvar pedido no banco' });
+  }
+});
+
+
+
+
 app.get('/produtos/:id', (req, res) => {
   const id = parseInt(req.params.id);
   if (isNaN(id)) return res.status(400).json({ error: 'ID inválido' });
@@ -139,6 +166,27 @@ app.get('/produtos/:id', (req, res) => {
   }
 });
 
+// Rota GET para listar todos os pedidos
+app.get('/pedidos', (req, res) => {
+  try {
+    // Busca todos os pedidos do banco
+    const pedidos = db.prepare('SELECT * FROM Pedidos').all();
+
+    // Se quiser, pode fazer o parse do campo itens (JSON string) para objeto
+    const pedidosFormatados = pedidos.map(pedido => ({
+      id: pedido.id,
+      usuario_id: pedido.usuario_id,
+      itens: JSON.parse(pedido.itens),
+      total: pedido.total,
+      data_pedido: pedido.data_pedido
+    }));
+
+    res.json(pedidosFormatados);
+  } catch (err) {
+    console.error('Erro ao buscar pedidos:', err);
+    res.status(500).json({ error: 'Erro ao buscar pedidos no banco' });
+  }
+});
 
 
 
