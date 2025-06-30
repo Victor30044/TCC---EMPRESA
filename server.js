@@ -103,7 +103,7 @@ app.post('/produtos', (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-
+// mudança 
 // Rotas para usuários
 app.post('/usuarios', (req, res) => {
   const { nome, email, senha, telefone, endereco } = req.body;
