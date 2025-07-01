@@ -740,6 +740,7 @@ document.getElementById("entrega").addEventListener("change", () => {
   });
 }
 
+
 function processarPagamento(event, modal) {
   event.preventDefault();
 
