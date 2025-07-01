@@ -790,33 +790,50 @@ modal.hide();  // Isso já ativa o listener para .remove()
 const carrinho = JSON.parse(localStorage.getItem("carrinho")) || {};
 const itens = Object.values(carrinho);
 const frete = 5;
-const total = itens.reduce((acc, item) => acc + item.valor * item.quantidade, 0) + frete;
 
 const usuario = JSON.parse(localStorage.getItem("usuario"));
 if (!usuario || !usuario.id) {
   alert("Usuário não está logado.");
   return;
 }
-
 // Envia o pedido para o backend
+// Supondo que 'itens' já esteja preenchido
+itens.forEach(item => {
+  item.preco = Number(item.preco);
+  item.quantidade = Number(item.quantidade);
+});
+
+const total = itens.reduce((acc, item) => {
+  const preco = Number(item.preco);
+  const quantidade = Number(item.quantidade);
+  if (isNaN(preco) || isNaN(quantidade)) return acc;
+  return acc + preco * quantidade;
+}, 0);
+
+if (isNaN(total) || total <= 0) {
+  alert("Erro: total inválido. Verifique os itens do pedido.");
+  return;
+}
+
 fetch("http://localhost:3000/pedidos", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-        usuario_id: usuario.id,
-        itens,
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    usuario_id: usuario.id,
+    itens,
     total
-})
+  }),
 })
 .then(res => res.json())
 .then(data => {
-    console.log("Pedido salvo:", data);
-    alert(`Pedido realizado com sucesso! Código do pedido: ${data.id_pedido}`);
+  console.log("Pedido salvo:", data);
+  alert(`Pedido realizado com sucesso! Código do pedido: ${data.id_pedido}`);
 })
 .catch(err => {
-    console.error("Erro ao enviar pedido:", err);
-    alert("Erro ao salvar pedido no banco.");
+  console.error("Erro ao enviar pedido:", err);
+  alert("Erro ao salvar pedido no banco.");
 });
+
 localStorage.removeItem("carrinho");
 carregarCarrinho()
 
