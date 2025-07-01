@@ -4,7 +4,6 @@ const Database = require('better-sqlite3');
 
 const app = express();
 const db = new Database('./pizzaria.db');
-
 app.use(cors());
 app.use(express.json());
 
@@ -78,6 +77,17 @@ if (row.total === 0) {
 app.get('/produtos', (req, res) => {
   const produtos = db.prepare('SELECT * FROM Produtos').all();
   res.json(produtos);
+});
+app.post('/login', (req, res) => {
+  const { email, senha } = req.body;
+
+  const usuario = db.prepare('SELECT * FROM Usuarios WHERE email = ? AND senha = ?').get(email, senha);
+
+  if (usuario) {
+    res.json({ usuario });
+  } else {
+    res.status(401).json({ error: 'Credenciais inválidas' });
+  }
 });
 
 app.post('/produtos', (req, res) => {

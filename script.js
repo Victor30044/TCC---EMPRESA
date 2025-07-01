@@ -134,14 +134,6 @@ class Pedido {
         });
     }
 }
-
-let sabores = ["Muzarela", "Quatro Queijos", "Frango Catupiry", "Calabresa", "Bacon"];
-let cardapio = [];
-
-sabores.forEach(sabor => {
-    cardapio.push(new Produto(sabor));
-})
-
 function carregarCadastro() {
     if (localStorage.getItem("usuario") == null)
         localStorage.setItem("usuario", JSON.stringify({}));
@@ -799,7 +791,7 @@ const itens = Object.values(carrinho);
 const frete = 5;
 const total = itens.reduce((acc, item) => acc + item.valor * item.quantidade, 0) + frete;
 
-const usuario = JSON.parse(localStorage.getItem("usuarios")["usuario"]);
+const usuario = JSON.parse(localStorage.getItem("usuario"));
 if (!usuario || !usuario.id) {
   alert("Usuário não está logado.");
   return;

@@ -184,95 +184,138 @@
       <p>Crie sua conta e aproveite o melhor da culinária italiana.</p>
     </div>
     <div class="right">
-      <form action="https://formsubmit.co/seuemail@exemplo.com" method="POST">
+      <form id="formCadastro">
         <h2>Criar conta</h2>
 
         <div class="input-group">
           <label for="nomeUsuario">Nome</label>
-          <input required type="text" name="nomeUsuario" id="nomeUsuario" />
+          <input required type="text" id="nomeUsuario" />
         </div>
 
         <div class="input-group">
           <label for="emailUsuario">Email</label>
-          <input required type="email" name="emailUsuario" id="emailUsuario" />
+          <input required type="email" id="emailUsuario" />
         </div>
 
         <div class="input-group">
           <label for="cpfUsuario">CPF</label>
-          <input required type="text" name="cpfUsuario" id="cpfUsuario" />
+          <input required type="text" id="cpfUsuario" />
         </div>
 
         <div class="input-group">
           <label for="senhaUsuario">Senha</label>
-          <input required type="password" name="senhaUsuario" id="senhaUsuario" />
+          <input required type="password" id="senhaUsuario" />
         </div>
 
         <div class="input-group">
           <label for="cepUsuario">CEP</label>
-          <input required type="text" name="cepUsuario" id="cepUsuario" maxlength="9" />
+          <input required type="text" id="cepUsuario" maxlength="9" />
         </div>
 
         <div class="input-group">
           <label for="numUsuario">Número</label>
-          <input required type="number" name="numUsuario" id="numUsuario" />
+          <input required type="number" id="numUsuario" />
         </div>
 
         <div class="input-group">
           <label for="complementoUsuario">Complemento</label>
-          <input required type="text" name="complementoUsuario" id="complementoUsuario" />
+          <input required type="text" id="complementoUsuario" />
         </div>
 
         <div class="input-group">
-          <input required type="text" name="ruaUsuario" id="ruaUsuario" placeholder="Rua" />
-          <input required type="text" name="bairroUsuario" id="bairroUsuario" placeholder="Bairro" />
+          <input required type="text" id="ruaUsuario" placeholder="Rua" />
+          <input required type="text" id="bairroUsuario" placeholder="Bairro" />
         </div>
 
         <div class="input-group">
-          <input required type="text" name="cidadeUsuario" id="cidadeUsuario" placeholder="Cidade" />
+          <input required type="text" id="cidadeUsuario" placeholder="Cidade" />
         </div>
-
-        <!-- FormSubmit opções -->
-        <input type="hidden" name="_captcha" value="false" />
-        <input type="hidden" name="_next" value="https://sua-pagina-de-obrigado.com" />
 
         <button class="btn" type="submit">Cadastrar</button>
 
-        
         <div class="extra-option">
           Já tem uma conta?
           <a href="login.html">Entrar</a>
         </div>
-        <div style="text-align: center; margin-top: 20px;">
-  <a href="index.html" style="color: #800000; font-weight: bold; text-decoration: none;">
-    ← Página inicial
-  </a>
-</div>
 
+        <div style="text-align: center; margin-top: 20px;">
+          <a href="index.html" style="color: #800000; font-weight: bold; text-decoration: none;">
+            ← Página inicial
+          </a>
+        </div>
       </form>
     </div>
   </div>
 
-  <script src="../script.js">
-    document.getElementById('cepUsuario').addEventListener('blur', function () {
-      const cep = this.value.replace(/\D/g, '');
+  <script>
+    document.getElementById("cepUsuario").addEventListener("blur", function () {
+      const cep = this.value.replace(/\D/g, "");
 
       if (cep.length === 8) {
         fetch(`https://viacep.com.br/ws/${cep}/json/`)
-          .then(response => response.json())
-          .then(data => {
+          .then((response) => response.json())
+          .then((data) => {
             if (!data.erro) {
-              document.getElementById('ruaUsuario').value = data.logradouro || '';
-              document.getElementById('bairroUsuario').value = data.bairro || '';
-              document.getElementById('cidadeUsuario').value = data.localidade || '';
+              document.getElementById("ruaUsuario").value = data.logradouro || "";
+              document.getElementById("bairroUsuario").value = data.bairro || "";
+              document.getElementById("cidadeUsuario").value = data.localidade || "";
             } else {
-              alert('CEP não encontrado!');
+              alert("CEP não encontrado!");
             }
           })
-          .catch(() => alert('Erro ao buscar o CEP!'));
+          .catch(() => alert("Erro ao buscar o CEP!"));
       } else {
-        alert('CEP inválido!');
+        alert("CEP inválido!");
       }
     });
+
+document.getElementById("formCadastro").addEventListener("submit", async function (e) {
+  e.preventDefault();
+
+  const nome = document.getElementById("nomeUsuario").value;
+  const email = document.getElementById("emailUsuario").value;
+  const senha = document.getElementById("senhaUsuario").value;
+  const telefone = document.getElementById("cpfUsuario").value;
+
+  const cep = document.getElementById("cepUsuario").value;
+  const numero = document.getElementById("numUsuario").value;
+  const complemento = document.getElementById("complementoUsuario").value;
+  const rua = document.getElementById("ruaUsuario").value;
+  const bairro = document.getElementById("bairroUsuario").value;
+  const cidade = document.getElementById("cidadeUsuario").value;
+
+  const endereco = `${rua}, Nº ${numero}, ${bairro}, ${complemento} - ${cidade} - CEP ${cep}`;
+  const dados = { nome, email, senha, telefone, endereco };
+
+  try {
+    const resposta = await fetch("http://localhost:3000/usuarios", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(dados)
+    });
+
+    const resultado = await resposta.json();
+
+    if (resposta.ok) {
+      // Salva o usuário logado no localStorage com os dados retornados
+      localStorage.setItem("usuarioLogado", JSON.stringify({
+        id: resultado.id || null, // se retornar o ID
+        nome,
+        email,
+        telefone,
+        endereco
+      }));
+
+      alert("Cadastro realizado com sucesso!");
+      window.location.href = "../index.html";
+    } else {
+      alert("Erro: " + (resultado.error || "Não foi possível cadastrar."));
+    }
+  } catch (erro) {
+    console.error("Erro ao cadastrar:", erro);
+    alert("Erro de conexão com o servidor.");
+  }
+});
   </script>
 </body>
 
