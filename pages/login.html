@@ -214,13 +214,8 @@
 
         if (resposta.ok) {
           localStorage.setItem('usuario', JSON.stringify(resultado.usuario));
-          alert('Login realizado com sucesso!');
-
-          
-
-          } else {
-            window.location.href = '../index.html';
-          }
+          alert('Login realizado com sucesso!');window.location.href = '../index.html';
+          } 
         }
 
      catch (erro) {

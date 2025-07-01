@@ -24,7 +24,6 @@
     telefone TEXT,
     endereco TEXT
   );
-ALTER TABLE Usuarios ADD COLUMN tipo TEXT DEFAULT 'cliente';
 
   CREATE TABLE IF NOT EXISTS Pedidos (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -44,6 +43,14 @@ try {
     console.error("Erro ao adicionar coluna pagamento:", err.message);
   }
 }
+try {
+  db.prepare(`ALTER TABLE Usuarios ADD COLUMN tipo TEXT DEFAULT 'cliente'`).run();
+} catch (err) {
+  if (!err.message.includes('duplicate column')) {
+    console.error("Erro ao adicionar coluna tipo:", err.message);
+  }
+}
+
 
   // Inserção inicial dos produtos, se a tabela estiver vazia
   const row = db.prepare('SELECT COUNT(*) as total FROM Produtos').get();
@@ -137,21 +144,8 @@ app.post('/login', (req, res) => {
       res.status(500).send('Erro ao inserir usuário');
     }
   });
-app.patch('/pedidos/:id/concluir', (req, res) => {
-  const id = parseInt(req.params.id);
-  if (isNaN(id)) return res.status(400).json({ error: 'ID inválido' });
 
-  try {
-    const stmt = db.prepare('UPDATE Pedidos SET status = ? WHERE id = ?');
-    const info = stmt.run('concluido', id);
 
-    if (info.changes === 0) return res.status(404).json({ error: 'Pedido não encontrado' });
-
-    res.json({ mensagem: 'Pedido concluído com sucesso' });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
 
   app.get('/usuarios', (req, res) => {
     try {
@@ -187,6 +181,26 @@ app.post('/pedidos', (req, res) => {
 
 
 
+// Rota para concluir pedido
+app.patch('/pedidos/:id/concluir', (req, res) => {
+  const id = parseInt(req.params.id);
+  if (isNaN(id)) return res.status(400).json({ error: 'ID inválido' });
+
+  try {
+    const stmt = db.prepare('UPDATE Pedidos SET status = ? WHERE id = ?');
+    const info = stmt.run('concluido', id);
+
+    if (info.changes === 0) {
+      return res.status(404).json({ error: 'Pedido não encontrado' });
+    }
+
+    res.json({ mensagem: 'Pedido concluído com sucesso' });
+  } catch (err) {
+    console.error('Erro ao concluir pedido:', err.message);
+    res.status(500).json({ error: 'Erro ao concluir pedido' });
+  }
+});
+
 
 
   app.get('/produtos/:id', (req, res) => {
@@ -221,7 +235,8 @@ const pedidosFormatados = pedidos.map(pedido => ({
   itens: JSON.parse(pedido.itens),
   total: pedido.total,
   data_pedido: pedido.data_pedido,
-  pagamento: pedido.pagamento // <-- necessário para mostrar no frontend
+  pagamento: pedido.pagamento, // <-- necessário para mostrar no frontend
+  status: pedido.status
 }));
 
 
