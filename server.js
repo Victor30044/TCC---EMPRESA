@@ -24,6 +24,7 @@
     telefone TEXT,
     endereco TEXT
   );
+ALTER TABLE Usuarios ADD COLUMN tipo TEXT DEFAULT 'cliente';
 
   CREATE TABLE IF NOT EXISTS Pedidos (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -87,17 +88,17 @@ try {
     const produtos = db.prepare('SELECT * FROM Produtos').all();
     res.json(produtos);
   });
-  app.post('/login', (req, res) => {
-    const { email, senha } = req.body;
+app.post('/login', (req, res) => {
+  const { email, senha } = req.body;
+  const usuario = db.prepare('SELECT * FROM Usuarios WHERE email = ? AND senha = ?').get(email, senha);
 
-    const usuario = db.prepare('SELECT * FROM Usuarios WHERE email = ? AND senha = ?').get(email, senha);
+  if (usuario) {
+    res.json({ usuario });
+  } else {
+    res.status(401).json({ error: 'Credenciais inválidas' });
+  }
+});
 
-    if (usuario) {
-      res.json({ usuario });
-    } else {
-      res.status(401).json({ error: 'Credenciais inválidas' });
-    }
-  });
 
   app.post('/produtos', (req, res) => {
     const { nome, descricao = '', preco } = req.body;
