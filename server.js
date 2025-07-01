@@ -9,31 +9,40 @@
 
   // Criação das tabelas
   db.exec(`
-    CREATE TABLE IF NOT EXISTS Produtos (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      nome TEXT NOT NULL,
-      descricao TEXT,
-      preco REAL NOT NULL
-    );
+  CREATE TABLE IF NOT EXISTS Produtos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome TEXT NOT NULL,
+    descricao TEXT,
+    preco REAL NOT NULL
+  );
 
-    CREATE TABLE IF NOT EXISTS Usuarios (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      nome TEXT NOT NULL,
-      email TEXT NOT NULL UNIQUE,
-      senha TEXT NOT NULL,
-      telefone TEXT,
-      endereco TEXT
-    );
+  CREATE TABLE IF NOT EXISTS Usuarios (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    senha TEXT NOT NULL,
+    telefone TEXT,
+    endereco TEXT
+  );
 
-    CREATE TABLE IF NOT EXISTS Pedidos (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      usuario_id INTEGER NOT NULL,
-      itens TEXT NOT NULL,
-      total REAL NOT NULL,
-      data_pedido DATETIME DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (usuario_id) REFERENCES Usuarios(id)
-    );
-  `);
+  CREATE TABLE IF NOT EXISTS Pedidos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    usuario_id INTEGER NOT NULL,
+    itens TEXT NOT NULL,
+    total REAL NOT NULL,
+    data_pedido DATETIME DEFAULT CURRENT_TIMESTAMP,
+    status TEXT DEFAULT 'pendente',
+    FOREIGN KEY (usuario_id) REFERENCES Usuarios(id)
+  );
+`);
+// Tenta adicionar a coluna "pagamento" se ainda não existir
+try {
+  db.prepare(`ALTER TABLE Pedidos ADD COLUMN pagamento TEXT DEFAULT 'entrega'`).run();
+} catch (err) {
+  if (!err.message.includes('duplicate column')) {
+    console.error("Erro ao adicionar coluna pagamento:", err.message);
+  }
+}
 
   // Inserção inicial dos produtos, se a tabela estiver vazia
   const row = db.prepare('SELECT COUNT(*) as total FROM Produtos').get();
@@ -127,6 +136,21 @@
       res.status(500).send('Erro ao inserir usuário');
     }
   });
+app.patch('/pedidos/:id/concluir', (req, res) => {
+  const id = parseInt(req.params.id);
+  if (isNaN(id)) return res.status(400).json({ error: 'ID inválido' });
+
+  try {
+    const stmt = db.prepare('UPDATE Pedidos SET status = ? WHERE id = ?');
+    const info = stmt.run('concluido', id);
+
+    if (info.changes === 0) return res.status(404).json({ error: 'Pedido não encontrado' });
+
+    res.json({ mensagem: 'Pedido concluído com sucesso' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
   app.get('/usuarios', (req, res) => {
     try {
@@ -184,19 +208,21 @@ app.get('/pedidos', (req, res) => {
       SELECT p.*, u.nome AS nome_usuario, u.endereco AS endereco_usuario
       FROM Pedidos p
       JOIN Usuarios u ON p.usuario_id = u.id
-      ORDER BY p.data_pedido DESC
+ORDER BY p.data_pedido ASC
     `).all();
 
     // Parseia o campo itens que está como JSON string
-    const pedidosFormatados = pedidos.map(pedido => ({
-      id: pedido.id,
-      usuario_id: pedido.usuario_id,
-      nome_usuario: pedido.nome_usuario,
-      endereco_usuario: pedido.endereco_usuario,
-      itens: JSON.parse(pedido.itens),
-      total: pedido.total,
-      data_pedido: pedido.data_pedido
-    }));
+const pedidosFormatados = pedidos.map(pedido => ({
+  id: pedido.id,
+  usuario_id: pedido.usuario_id,
+  nome_usuario: pedido.nome_usuario,
+  endereco_usuario: pedido.endereco_usuario,
+  itens: JSON.parse(pedido.itens),
+  total: pedido.total,
+  data_pedido: pedido.data_pedido,
+  pagamento: pedido.pagamento // <-- necessário para mostrar no frontend
+}));
+
 
     res.json(pedidosFormatados);
 
