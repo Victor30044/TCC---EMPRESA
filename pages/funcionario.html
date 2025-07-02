@@ -3,112 +3,126 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Pedidos Recebidos - Funcionário</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <title>Pedidos Funcionário</title>
+  <style>
+    .pedido {
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin: 10px;
+      width: 300px;
+      display: inline-block;
+      vertical-align: top;
+      box-sizing: border-box;
+      border-radius: 5px;
+    }
+    .itens li {
+      list-style: none;
+      margin: 5px 0;
+    }
+    label.concluido {
+      color: green;
+      font-weight: bold;
+      text-decoration: line-through;
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  </style>
 </head>
 <body>
-
-  <div class="container mt-4">
-    <h1>Pedidos Recebidos</h1>
-    <button id="btnAtualizar" class="btn btn-success mb-3">Atualizar Pedidos</button>
-    <div id="pedidosContainer"></div>
-  </div>
+  <h1>Pedidos Pendentes</h1>
+  <div id="pedidosContainer">Carregando pedidos...</div>
 
   <script>
-   async function carregarPedidos() {
-  try {
-    const res = await fetch('http://localhost:3000/pedidos');
-    if (!res.ok) throw new Error('Erro ao buscar pedidos');
+    async function carregarPedidos() {
+      const container = document.getElementById('pedidosContainer');
+      container.innerHTML = 'Carregando pedidos...';
 
-    let pedidos = await res.json();
+      try {
+        const res = await fetch('http://localhost:3000/pedidos');
+        const pedidos = await res.json();
 
-    // ⛔️ Não mostra pedidos já entregues
-    pedidos = pedidos.filter(pedido => pedido.status !== 'entregue');
+        // Filtra apenas os pedidos com status "pendente"
+        const pendentes = pedidos.filter(p => p.status === 'pendente');
 
-    const container = document.getElementById('pedidosContainer');
-    container.innerHTML = '';
+        if (pendentes.length === 0) {
+          container.innerHTML = '<p>Não há pedidos pendentes.</p>';
+          return;
+        }
 
-    if (pedidos.length === 0) {
-      container.innerHTML = '<p>Nenhum pedido encontrado.</p>';
-      return;
-    }
+        container.innerHTML = '';
 
-    pedidos.forEach(pedido => {
-      const itens = pedido.itens.map(item =>
-        `${item.quantidade}x ${item.nome} ` +
-        `(R$ ${(item.preco ?? 0).toFixed(2)} cada, subtotal R$ ${(item.subtotal ?? (item.quantidade * item.preco ?? 0)).toFixed(2)})`
-      ).join(', ');
+        pendentes.forEach(pedido => {
+          const pagamentoLabel = pedido.pagamento === 'online'
+            ? '<p style="color: green; font-weight: bold;">Pedido Pago Online</p>'
+            : '<p style="color: orange; font-weight: bold;">Pagamento na Entrega</p>';
 
-      const pedidoHtml = `
-        <div class="card mb-3 shadow-sm" id="pedido-${pedido.id}">
-          <div class="card-body">
-            <h5 class="card-title">Cliente: ${pedido.nome_usuario}</h5>
-            <p class="card-text"><strong>Endereço:</strong> ${pedido.endereco_usuario}</p>
-            <p class="card-text"><strong>Total:</strong> R$ ${pedido.total.toFixed(2)}</p>
-            <p class="card-text"><strong>Itens:</strong><br>${itens}</p>
-            <p class="card-text"><small class="text-muted">Status: ${pedido.status}</small></p>
-            <p class="card-text"><small class="text-muted">Pagamento: ${pedido.pagamento}</small></p>
-            <p class="card-text"><small class="text-muted">Data do Pedido: ${new Date(pedido.data_pedido).toLocaleString()}</small></p>
-            <button class="btn btn-success btn-sm" onclick="marcarComoEntregue(${pedido.id})">Entregue</button>
-          </div>
-        </div>
-      `;
+          const listaItens = pedido.itens.map((item, i) => `
+            <li>
+              <input type="checkbox" id="item-${pedido.id}-${i}">
+              <label for="item-${pedido.id}-${i}">
+                ${item.nome} (x${item.quantidade}) - R$ ${item.preco.toFixed(2)}
+              </label>
+            </li>`).join('');
 
-      container.insertAdjacentHTML('beforeend', pedidoHtml);
-    });
+          const div = document.createElement('div');
+          div.className = 'pedido';
 
-        // Depois que inserir todos os pedidos, adiciona evento para os botões "Entregue"
-        container.querySelectorAll('.btn-entregue').forEach(button => {
-          button.addEventListener('click', async (e) => {
-            const pedidoId = e.target.getAttribute('data-id');
+          div.innerHTML = `
+            <h2>Pedido #${pedido.id}</h2>
+            <p><strong>Usuário ID:</strong> ${pedido.usuario_id}</p>
+            <p><strong>Cliente:</strong> ${pedido.nome_usuario}</p>
+            <p><strong>Local da entrega:</strong> ${pedido.endereco_usuario}</p>
+            <p><strong>Data:</strong> ${pedido.data_pedido}</p>
+            ${pagamentoLabel}
+            <p><strong>Itens:</strong></p>
+            <ul class="itens">${listaItens}</ul>
+            <p><strong>Total:</strong> R$ ${pedido.total.toFixed(2)}</p>
+            <button data-id="${pedido.id}" disabled>Concluir Pedido</button>
+          `;
+
+          container.appendChild(div);
+
+          const checkboxes = div.querySelectorAll('input[type="checkbox"]');
+          const botaoConcluir = div.querySelector('button');
+
+          checkboxes.forEach(cb => {
+            cb.addEventListener('change', () => {
+              const label = cb.nextElementSibling;
+              label.classList.toggle('concluido', cb.checked);
+
+              const todosMarcados = Array.from(checkboxes).every(c => c.checked);
+              botaoConcluir.disabled = !todosMarcados;
+            });
+          });
+
+          botaoConcluir.addEventListener('click', async () => {
+            botaoConcluir.disabled = true;
+            botaoConcluir.textContent = 'Concluindo...';
+
             try {
-              const res = await fetch(`http://localhost:3000/pedidos/${pedidoId}`, {
+              const resp = await fetch(`http://localhost:3000/pedidos/${pedido.id}/concluir`, {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status: 'entregue' })
               });
-              if (!res.ok) throw new Error('Erro ao atualizar pedido');
+              if (!resp.ok) throw new Error('Erro ao concluir o pedido');
+              alert(`Pedido #${pedido.id} concluído!`);
 
-              // Remove o card do pedido da tela
-              const card = e.target.closest('.card');
-              card.remove();
-
+              // Remove a div da tela ao concluir o pedido
+              div.remove();
             } catch (err) {
-              console.error(err);
-              alert('Erro ao marcar pedido como entregue.');
+              alert(err.message);
+              botaoConcluir.disabled = false;
+              botaoConcluir.textContent = 'Concluir Pedido';
             }
           });
         });
-
-      } catch (error) {
-        console.error('Erro ao carregar pedidos:', error);
-        alert('Erro ao carregar pedidos. Veja o console para detalhes.');
+      } catch (err) {
+        container.innerHTML = `<p>Erro ao buscar pedidos: ${err.message}</p>`;
       }
     }
 
-    document.getElementById('btnAtualizar').addEventListener('click', carregarPedidos);
-
-    // Carrega os pedidos automaticamente ao abrir a página
-    window.onload = carregarPedidos;
-    async function marcarComoEntregue(pedidoId) {
-  try {
-    const res = await fetch(`http://localhost:3000/pedidos/${pedidoId}/concluir`, {
-      method: 'PATCH',
-    });
-
-    if (!res.ok) throw new Error('Erro ao marcar como entregue');
-
-    // Remove o card do DOM
-    const card = document.getElementById(`pedido-${pedidoId}`);
-    if (card) card.remove();
-  } catch (err) {
-    console.error(err);
-    alert('Erro ao concluir o pedido.');
-  }
-}
-
+    carregarPedidos();
   </script>
-
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
