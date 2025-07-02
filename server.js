@@ -1,12 +1,13 @@
-  const express = require('express');
-  const cors = require('cors');
-  const Database = require('better-sqlite3');
+const express = require('express');
+const path = require('path');
+const cors = require('cors');
+const Database = require('better-sqlite3');
 
-  const app = express();
-  const db = new Database('./pizzaria.db');
-  app.use(cors());
-  app.use(express.json());
+const app = express();
+const db = new Database('./pizzaria.db');
 
+app.use(cors());
+app.use(express.json());
   // Criação das tabelas
   db.exec(`
   CREATE TABLE IF NOT EXISTS Produtos (
@@ -222,7 +223,10 @@ app.patch('/pedidos/:id/concluir', (req, res) => {
       res.status(500).json({ error: err.message });
     }
   });
-
+  app.use(express.static(path.join(__dirname, 'public')));
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
   // Rota GET para listar todos os pedidos
 app.get('/pedidos', (req, res) => {
   try {
