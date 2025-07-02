@@ -194,18 +194,19 @@ app.patch('/pedidos/:id/concluir', (req, res) => {
 
   try {
     const stmt = db.prepare('UPDATE Pedidos SET status = ? WHERE id = ?');
-    const info = stmt.run('concluido', id);
+    const info = stmt.run('entregue', id); // <<<<< AQUI!
 
     if (info.changes === 0) {
       return res.status(404).json({ error: 'Pedido não encontrado' });
     }
 
-    res.json({ mensagem: 'Pedido concluído com sucesso' });
+    res.json({ mensagem: 'Pedido marcado como entregue com sucesso' });
   } catch (err) {
     console.error('Erro ao concluir pedido:', err.message);
     res.status(500).json({ error: 'Erro ao concluir pedido' });
   }
 });
+
 
 
 

@@ -15,44 +15,47 @@
   </div>
 
   <script>
-    async function carregarPedidos() {
-      try {
-        const res = await fetch('http://localhost:3000/pedidos');
-        if (!res.ok) throw new Error('Erro ao buscar pedidos');
-        const pedidos = await res.json();
+   async function carregarPedidos() {
+  try {
+    const res = await fetch('http://localhost:3000/pedidos');
+    if (!res.ok) throw new Error('Erro ao buscar pedidos');
 
-        const container = document.getElementById('pedidosContainer');
-        container.innerHTML = '';
+    let pedidos = await res.json();
 
-        if (pedidos.length === 0) {
-          container.innerHTML = '<p>Nenhum pedido encontrado.</p>';
-          return;
-        }
+    // ⛔️ Não mostra pedidos já entregues
+    pedidos = pedidos.filter(pedido => pedido.status !== 'entregue');
 
-      pedidos.forEach(pedido => {
-  const itens = pedido.itens.map(item =>
-  `${item.quantidade}x ${item.nome} ` +
-  `(R$ ${(item.preco ?? 0).toFixed(2)} cada, subtotal R$ ${(item.subtotal ?? (item.quantidade * item.preco ?? 0)).toFixed(2)})`
-).join(', ');
+    const container = document.getElementById('pedidosContainer');
+    container.innerHTML = '';
 
+    if (pedidos.length === 0) {
+      container.innerHTML = '<p>Nenhum pedido encontrado.</p>';
+      return;
+    }
 
-  const pedidoHtml = `
-    <div class="card mb-3 shadow-sm" id="pedido-${pedido.id}">
-      <div class="card-body">
-        <h5 class="card-title">Cliente: ${pedido.nome_usuario}</h5>
-        <p class="card-text"><strong>Endereço:</strong> ${pedido.endereco_usuario}</p>
-        <p class="card-text"><strong>Total:</strong> R$ ${pedido.total.toFixed(2)}</p>
-        <p class="card-text"><strong>Itens:</strong><br>${itens}</p>
-        <p class="card-text"><small class="text-muted">Status: ${pedido.status}</small></p>
-        <p class="card-text"><small class="text-muted">Pagamento: ${pedido.pagamento}</small></p>
-        <p class="card-text"><small class="text-muted">Data do Pedido: ${new Date(pedido.data_pedido).toLocaleString()}</small></p>
-        <button class="btn btn-success btn-sm" onclick="marcarComoEntregue(${pedido.id})">Entregue</button>
-      </div>
-    </div>
-  `;
+    pedidos.forEach(pedido => {
+      const itens = pedido.itens.map(item =>
+        `${item.quantidade}x ${item.nome} ` +
+        `(R$ ${(item.preco ?? 0).toFixed(2)} cada, subtotal R$ ${(item.subtotal ?? (item.quantidade * item.preco ?? 0)).toFixed(2)})`
+      ).join(', ');
 
-  container.insertAdjacentHTML('beforeend', pedidoHtml);
-});
+      const pedidoHtml = `
+        <div class="card mb-3 shadow-sm" id="pedido-${pedido.id}">
+          <div class="card-body">
+            <h5 class="card-title">Cliente: ${pedido.nome_usuario}</h5>
+            <p class="card-text"><strong>Endereço:</strong> ${pedido.endereco_usuario}</p>
+            <p class="card-text"><strong>Total:</strong> R$ ${pedido.total.toFixed(2)}</p>
+            <p class="card-text"><strong>Itens:</strong><br>${itens}</p>
+            <p class="card-text"><small class="text-muted">Status: ${pedido.status}</small></p>
+            <p class="card-text"><small class="text-muted">Pagamento: ${pedido.pagamento}</small></p>
+            <p class="card-text"><small class="text-muted">Data do Pedido: ${new Date(pedido.data_pedido).toLocaleString()}</small></p>
+            <button class="btn btn-success btn-sm" onclick="marcarComoEntregue(${pedido.id})">Entregue</button>
+          </div>
+        </div>
+      `;
+
+      container.insertAdjacentHTML('beforeend', pedidoHtml);
+    });
 
         // Depois que inserir todos os pedidos, adiciona evento para os botões "Entregue"
         container.querySelectorAll('.btn-entregue').forEach(button => {
