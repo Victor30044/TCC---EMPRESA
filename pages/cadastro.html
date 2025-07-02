@@ -247,7 +247,8 @@
     </div>
   </div>
 
-  <script src="../script.js">
+  <script>
+    // Auto preenchimento via CEP
     document.getElementById("cepUsuario").addEventListener("blur", function () {
       const cep = this.value.replace(/\D/g, "");
 
@@ -269,53 +270,44 @@
       }
     });
 
-document.getElementById("formCadastro").addEventListener("submit", async function (e) {
-  e.preventDefault();
+    // Envio do formulário
+    document.getElementById("formCadastro").addEventListener("submit", async function (e) {
+      e.preventDefault();
 
-  const nome = document.getElementById("nomeUsuario").value;
-  const email = document.getElementById("emailUsuario").value;
-  const senha = document.getElementById("senhaUsuario").value;
-  const telefone = document.getElementById("cpfUsuario").value;
+      const nome = document.getElementById("nomeUsuario").value;
+      const email = document.getElementById("emailUsuario").value;
+      const senha = document.getElementById("senhaUsuario").value;
+      const telefone = document.getElementById("cpfUsuario").value;
+      const cep = document.getElementById("cepUsuario").value;
+      const numero = document.getElementById("numUsuario").value;
+      const complemento = document.getElementById("complementoUsuario").value;
+      const rua = document.getElementById("ruaUsuario").value;
+      const bairro = document.getElementById("bairroUsuario").value;
+      const cidade = document.getElementById("cidadeUsuario").value;
 
-  const cep = document.getElementById("cepUsuario").value;
-  const numero = document.getElementById("numUsuario").value;
-  const complemento = document.getElementById("complementoUsuario").value;
-  const rua = document.getElementById("ruaUsuario").value;
-  const bairro = document.getElementById("bairroUsuario").value;
-  const cidade = document.getElementById("cidadeUsuario").value;
+      const endereco = `${rua}, Nº ${numero}, ${bairro}, ${complemento} - ${cidade} - CEP ${cep}`;
+      const dados = { nome, email, senha, telefone, endereco };
 
-  const endereco = `${rua}, Nº ${numero}, ${bairro}, ${complemento} - ${cidade} - CEP ${cep}`;
-  const dados = { nome, email, senha, telefone, endereco };
+      try {
+        const resposta = await fetch("http://localhost:3000/usuarios", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(dados)
+        });
 
-  try {
-    const resposta = await fetch("http://localhost:3000/usuarios", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(dados)
+        const resultado = await resposta.json();
+
+        if (resposta.ok) {
+          alert("Cadastro realizado com sucesso!");
+          window.location.href = "login.html"; // Redireciona pro login
+        } else {
+          alert("Erro: " + (resultado.error || "Não foi possível cadastrar."));
+        }
+      } catch (erro) {
+        console.error("Erro ao cadastrar:", erro);
+        alert("Erro de conexão com o servidor.");
+      }
     });
-
-    const resultado = await resposta.json();
-
-    if (resposta.ok) {
-      // Salva o usuário logado no localStorage com os dados retornados
-      localStorage.setItem("usuarioLogado", JSON.stringify({
-        id: resultado.id || null, // se retornar o ID
-        nome,
-        email,
-        telefone,
-        endereco
-      }));
-
-      alert("Cadastro realizado com sucesso!");
-      window.location.href = "../index.html";
-    } else {
-      alert("Erro: " + (resultado.error || "Não foi possível cadastrar."));
-    }
-  } catch (erro) {
-    console.error("Erro ao cadastrar:", erro);
-    alert("Erro de conexão com o servidor.");
-  }
-});
   </script>
 </body>
 

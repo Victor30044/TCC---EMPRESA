@@ -202,7 +202,13 @@
 
       const email = document.getElementById('loginEmail').value;
       const senha = document.getElementById('loginSenha').value;
-    if (email === 'maquebella2@gmail.com' && senha === "pizzasboas123") {            window.location.href = 'funcionario.html'; return }  // página do funcionário
+
+      // Verifica se é funcionário
+      if (email === 'maquebella2@gmail.com' && senha === "pizzasboas123") {
+        window.location.href = 'funcionario.html';
+        return;
+      }
+
       try {
         const resposta = await fetch('http://localhost:3000/login', {
           method: 'POST',
@@ -213,12 +219,14 @@
         const resultado = await resposta.json();
 
         if (resposta.ok) {
-          localStorage.setItem('usuario', JSON.stringify(resultado.usuario));
-          alert('Login realizado com sucesso!');window.location.href = '../index.html';
-          } 
+          // Salva como usuarioLogado (padrão com cadastro.html)
+          localStorage.setItem('usuarioLogado', JSON.stringify(resultado.usuario));
+          alert('Login realizado com sucesso!');
+          window.location.href = 'cardapio.html';
+        } else {
+          alert(resultado.error || 'E-mail ou senha incorretos.');
         }
-
-     catch (erro) {
+      } catch (erro) {
         console.error('Erro ao fazer login:', erro);
         alert('Erro de conexão com o servidor.');
       }

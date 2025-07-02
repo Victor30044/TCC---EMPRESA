@@ -1,13 +1,56 @@
 let pedido;
+const express = require('express');
+const cors = require('cors');
+const db = require('./database.js'); // Importa seu banco
+
+const app = express();
+app.use(cors());
+app.use(express.json()); // Para entender JSON no corpo das requisições
+// rotas para os pedidos
+
+app.post('/pedidos', (req, res) => {
+  const { usuario_id, nome_usuario, endereco_usuario, itens, total, pagamento } = req.body;
+  const data_pedido = new Date().toISOString();
+
+  const insert = db.prepare(`
+    INSERT INTO Pedidos (usuario_id, nome_usuario, endereco_usuario, itens, total, status, pagamento, data_pedido)
+    VALUES (?, ?, ?, ?, ?, 'pendente', ?, ?)
+  `);
+
+  const result = insert.run(
+    usuario_id,
+    nome_usuario,
+    endereco_usuario,
+    JSON.stringify(itens),
+    total,
+    pagamento,
+    data_pedido
+  );
+
+  res.status(201).json({ id: result.lastInsertRowid });
+});
+
+app.get('/pedidos', (req, res) => {
+  const stmt = db.prepare('SELECT * FROM Pedidos');
+  const pedidos = stmt.all().map(p => ({
+    ...p,
+    itens: JSON.parse(p.itens)
+  }));
+
+  res.json(pedidos);
+});
+
+
 
 class Produto {
     static ultimoCodigo = 0;
 
-    constructor(nome) {
+    constructor(nome, imagem) {
         Produto.ultimoCodigo += 1;
         this.id = Produto.ultimoCodigo;
         this.nome = nome;
         this.preco = 49.9;
+        this.imagem = imagem;
 
         const carrinhoLS = JSON.parse(localStorage.getItem('carrinho')) || {};
         this.quantidade = carrinhoLS[`produto${this.id}`]
@@ -324,6 +367,22 @@ async function carregarCardapio() {
             container.innerText = 'Nenhuma pizza cadastrada.';
             return;
         }
+        const imagensProdutos = {
+            'calabresa': 'https://link.to/imagem_calabresa.jpg',
+            'marguerita': 'https://link.to/imagem_marguerita.jpg',
+            'frango': 'https://link.to/imagem_frango.jpg',
+            'portuguesa': 'https://link.to/imagem_portuguesa.jpg',
+            'broto': 'https://link.to/imagem_broto.jpg',
+            'doce': 'https://link.to/imagem_doce.jpg',
+            // Adicione mais produtos conforme sua necessidade
+        };
+          produtos.forEach(produto => {
+            const nomeProduto = produto.nome.toLowerCase();
+            produto.imagem = imagensProdutos[nomeProduto] || '../imagens/default.jpg'; // Se não encontrar a imagem, usa uma padrão
+            // Restante da lógica para adicionar ao DOM...
+        });
+
+
 
         produtos = produtos.map(p => {
             const nome = p.nome.toLowerCase();
@@ -515,6 +574,7 @@ async function cadastrarUsuario(event) {
             throw new Error('Erro ao cadastrar usuário');
         }
 
+        localStorage.setItem("usuarioLogado", JSON.stringify(usuario));
         alert('Usuário cadastrado com sucesso!');
     } catch (error) {
         console.error(error);
@@ -824,11 +884,12 @@ function processarPagamento(event, modal) {
     const itens = Object.values(carrinho);
     const frete = 5;
 
-    const usuario = JSON.parse(localStorage.getItem("usuario"));
-    if (!usuario || !usuario.id) {
-        alert("Usuário não está logado.");
-        return;
-    }
+   const usuario = JSON.parse(localStorage.getItem("usuarioLogado"));
+if (!usuario || !usuario.id) {
+    alert("Usuário não está logado.");
+    return;
+}
+
 
     itens.forEach(item => {
         item.preco = Number(item.preco);
@@ -847,27 +908,40 @@ function processarPagamento(event, modal) {
         return;
     }
 
+   function finalizarPedido(itens, total, pagamento) {
+    const usuario = JSON.parse(localStorage.getItem("usuarioLogado"));
+
+    if (!usuario || !usuario.id) {
+        alert("Usuário não cadastrado");
+        return;
+    }
+
     fetch("http://localhost:3000/pedidos", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
             usuario_id: usuario.id,
+            nome_usuario: usuario.nome,
+            endereco_usuario: usuario.endereco,
             itens,
-            total
+            total,
+            pagamento
         }),
     })
     .then(res => res.json())
     .then(data => {
         console.log("Pedido salvo:", data);
-        alert(`Pedido realizado com sucesso! Código do pedido: ${data.id_pedido}`);
+        alert(`Pedido realizado com sucesso! Código do pedido: ${data.id}`);
+        localStorage.removeItem("carrinho");
+        carregarCarrinho();
     })
     .catch(err => {
         console.error("Erro ao enviar pedido:", err);
         alert("Erro ao salvar pedido no banco.");
     });
+}
 
-    localStorage.removeItem("carrinho");
-    carregarCarrinho();
+finalizarPedido(itens, total + frete, tipo); // tipo vem do radio button (credito ou entrega)
 }
 
 const cartoes = {
@@ -887,3 +961,11 @@ function detectarBandeira(numeroCartao) {
     }
     return false;
 }
+
+
+const PORT = 3000;
+
+app.listen(PORT, () => {
+  console.log(`Servidor rodando na porta ${PORT}`);
+});
+

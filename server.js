@@ -129,21 +129,27 @@ app.post('/login', (req, res) => {
   });
   // mudança 
   // Rotas para usuários
-  app.post('/usuarios', (req, res) => {
-    const { nome, email, senha, telefone, endereco } = req.body;
+app.post('/usuarios', (req, res) => {
+  const { nome, email, senha, telefone, endereco } = req.body;
 
-    if (!nome || !email || !senha || !telefone || !endereco) {
-      return res.status(400).send('Todos os campos são obrigatórios');
-    }
+  if (!nome || !email || !senha || !telefone || !endereco) {
+    return res.status(400).send('Todos os campos são obrigatórios');
+  }
 
-    try {
-      const stmt = db.prepare('INSERT INTO Usuarios (nome, email, senha, telefone, endereco) VALUES (?, ?, ?, ?, ?)');
-      stmt.run(nome, email, senha, telefone, endereco);
-      res.status(200).json({ mensagem: 'Usuário cadastrado com sucesso!' });
-    } catch (err) {
-      res.status(500).send('Erro ao inserir usuário');
-    }
-  });
+  try {
+    const stmt = db.prepare('INSERT INTO Usuarios (nome, email, senha, telefone, endereco) VALUES (?, ?, ?, ?, ?)');
+    const info = stmt.run(nome, email, senha, telefone, endereco);
+    
+    res.status(200).json({ 
+      mensagem: 'Usuário cadastrado com sucesso!',
+      id: info.lastInsertRowid // envia o ID para o front salvar no localStorage
+    });
+  } catch (err) {
+    console.error('Erro ao inserir usuário:', err.message);
+    res.status(500).send('Erro ao inserir usuário');
+  }
+});
+
 
 
 

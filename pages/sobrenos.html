@@ -1,76 +1,236 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
-    <link rel="stylesheet" href="../styles/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sobre Nós | Ma Que Bella!</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
+    crossorigin="anonymous" />
+  <link rel="stylesheet" href="../styles/style.css" />
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #fffaf5;
+      color: #2c4b3c;
+      line-height: 1.7;
+    }
+    .section-title {
+      font-size: 3rem;
+      font-weight: 700;
+      color: #b12a20;
+      margin-bottom: 3rem;
+      text-align: center;
+      letter-spacing: 1px;
+    }
+    h2 {
+      color: #b12a20;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-align: center;
+    }
+    p {
+      max-width: 900px;
+      margin: 0 auto 1.3rem auto;
+      font-size: 1.125rem;
+    }
+    .highlight {
+      color: #b12a20;
+      font-weight: 700;
+    }
+    .bg-light-green {
+      background-color: #e7f2ec;
+      padding: 2rem;
+      border-radius: 12px;
+      margin-bottom: 3rem;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
+      box-shadow: 0 4px 15px rgba(44, 75, 60, 0.1);
+    }
+    .icon-circle {
+      background-color: #b12a20;
+      color: white;
+      width: 70px;
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      border-radius: 50%;
+      margin: 0 auto 1rem auto;
+      box-shadow: 0 3px 8px rgba(177, 42, 32, 0.6);
+    }
+    .values-list {
+      max-width: 900px;
+      margin: 2rem auto 4rem auto;
+      padding: 0 1rem;
+    }
+    .values-list ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+    .values-list ul li {
+      font-size: 1.125rem;
+      margin-bottom: 1rem;
+      padding-left: 1.5rem;
+      position: relative;
+    }
+    .values-list ul li::before {
+      content: "✔";
+      position: absolute;
+      left: 0;
+      color: #b12a20;
+      font-weight: bold;
+    }
+    footer {
+      background: #222;
+      color: #eee;
+      padding: 2rem 1rem;
+      text-align: center;
+      font-size: 0.9rem;
+    }
+    footer a {
+      color: #ffb347;
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+    footer a:hover {
+      color: #fff;
+      text-decoration: underline;
+    }
+  </style>
 </head>
-
 <body>
-    <header>
-<nav class="navbar navbar-expand-lg bg-body-tertiary">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="../index.html"><img src="../imagens/logo.jfif" alt="Logo Ma Que Bella!" height="50" /></a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse justify-content-center w-100" id="navbarSupportedContent">
-      <ul class="navbar-nav mb-2 mb-lg-0 mx-auto gap-5">
-        <li class="nav-item"><a class="nav-link text-white" href="../index.html">Início</a></li>
-        <li class="nav-item"><a class="nav-link text-white" href="cardapio.html">Cardápio</a></li>
-        <li class="nav-item"><a class="nav-link text-white active" href="sobrenos.html">Sobre Nós</a></li>
-      </ul>
-      <div class="d-lg-flex ms-lg-auto align-items-center navbar-icons">
-        <a href="carrinho.html" class="nav-link" title="Carrinho">
-<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="#fff" class="bi bi-cart" viewBox="0 0 16 16">
-  <path d="M0 1.5A.5.5 0 0 1 .5 1h1a.5.5 0 0 1 .485.379L2.89 5H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 14H4a.5.5 0 0 1-.491-.408L1.01 2H.5a.5.5 0 0 1-.5-.5zM3.102 6l1.313 7h8.17l1.313-7H3.102z"/>
-  <path d="M5 12a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm6 1a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
-</svg>
-
+  <header>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="../index.html">
+          <img src="../imagens/logo.jfif" alt="Logo Ma Que Bella!" height="50" />
         </a>
-
-
-        <a href="login.html" class="nav-link" id="btnLogin" title="Login">
-<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="#fff" class="bi bi-person-circle" viewBox="0 0 16 16">
-  <path d="M11 10c1.105 0 2 .672 2 1.5v.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5v-.5c0-.828.895-1.5 2-1.5h6z"/>
-  <path fill-rule="evenodd" d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0-1A6 6 0 1 0 8 2a6 6 0 0 0 0 12z"/>
-  <path d="M8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/>
-</svg>
-
-        </a>
-
-        <span class="nav-link text-white d-none" id="userName" style="font-weight: bold;"></span>
-
-        <a href="#" class="nav-link text-white d-none" id="btnLogout" style="font-weight: bold; cursor:pointer;">
-<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="white" class="bi bi-box-arrow-in-right" viewBox="0 0 16 16">
-  <path fill-rule="evenodd" d="M10 12a.5.5 0 0 1 0 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h6a.5.5 0 0 1 0 1H4a.5.5 0 0 0-.5.5v8A.5.5 0 0 0 4 13h6z"/>
-  <path fill-rule="evenodd" d="M15.354 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L13.293 7.5H6.5a.5.5 0 0 0 0 1h6.793l-1.647 1.646a.5.5 0 0 0 .708.708l3-3z"/>
-</svg>
-
-        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+          data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+          aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-center w-100" id="navbarSupportedContent">
+          <ul class="navbar-nav mb-2 mb-lg-0 mx-auto gap-5">
+            <li class="nav-item"><a class="nav-link text-white" href="../index.html">Início</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="cardapio.html">Cardápio</a></li>
+            <li class="nav-item"><a class="nav-link text-white active" href="sobrenos.html">Sobre Nós</a></li>
+          </ul>
+          <div class="d-lg-flex ms-lg-auto align-items-center navbar-icons">
+            <a href="carrinho.html" class="nav-link" title="Carrinho">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="#fff" class="bi bi-cart"
+                viewBox="0 0 16 16">
+                <path
+                  d="M0 1.5A.5.5 0 0 1 .5 1h1a.5.5 0 0 1 .485.379L2.89 5H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 14H4a.5.5 0 0 1-.491-.408L1.01 2H.5a.5.5 0 0 1-.5-.5z" />
+                <path
+                  d="M5 12a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm6 1a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
+              </svg>
+            </a>
+            <a href="login.html" class="nav-link" id="btnLogin" title="Login">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="#fff" class="bi bi-person-circle"
+                viewBox="0 0 16 16">
+                <path
+                  d="M11 10c1.105 0 2 .672 2 1.5v.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5v-.5c0-.828.895-1.5 2-1.5h6z" />
+                <path fill-rule="evenodd"
+                  d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0-1A6 6 0 1 0 8 2a6 6 0 0 0 0 12z" />
+                <path d="M8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" />
+              </svg>
+            </a>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-</nav>
+    </nav>
+  </header>
 
-    </header>
-    <main>
+  <main class="container py-5">
+    <h1 class="section-title">Nossa História</h1>
+    <p class="lead text-center mb-5">
+      A <span class="highlight">Cyber Eat</span> nasceu da convicção de que a inovação tecnológica deve estar ao alcance de todos os empreendedores da gastronomia, especialmente os pequenos negócios que frequentemente encontram barreiras para ingressar no mundo digital.
+    </p>
 
-    </main>
-    <footer>
+    <section class="mb-5">
+      <h2>O Início da Jornada</h2>
+      <p>
+        Durante um trabalho escolar, um dos nossos fundadores realizou uma análise detalhada de negócios locais e entrou em contato com o proprietário de uma pizzaria do bairro. Este, apesar da qualidade reconhecida de seus produtos, relatava desafios significativos para divulgar seu cardápio, organizar pedidos e construir uma presença digital eficaz e econômica.
+      </p>
+      <p>
+        Essa constatação foi o ponto de partida para a criação da <span class="highlight">Cyber Eat</span>. Inspirados pela simplicidade do problema e pela complexidade da solução para pequenos estabelecimentos, decidimos unir nossos conhecimentos em tecnologia para desenvolver ferramentas que simplificassem e potencializassem a atuação digital desses negócios.
+      </p>
+    </section>
 
-    </footer>
-    
-    <script src="../script.js">  atualizarHeaderUsuario();</script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
-    crossorigin="anonymous"></script>
-    <script src="../js/header.js" defer></script>
+    <section class="bg-light-green mb-5">
+      <h2>Nossa Missão</h2>
+      <p>
+        Proporcionar soluções digitais de alta qualidade, acessíveis e adaptadas à realidade dos pequenos e médios restaurantes, transformando o modo como eles interagem com seus clientes e gerenciam seus pedidos. Acreditamos que tecnologia é um facilitador essencial para o crescimento sustentável e a excelência no atendimento gastronômico.
+      </p>
+    </section>
+
+    <section class="mb-5">
+      <h2>Valores que nos Movem</h2>
+      <div class="values-list">
+        <ul>
+          <li><strong>Inovação Contínua:</strong> Buscamos constantemente aprimorar nossas soluções para acompanhar as tendências tecnológicas e as necessidades do mercado.</li>
+          <li><strong>Compromisso com o Cliente:</strong> Priorizamos a satisfação, escutamos atentamente e adaptamos nossos serviços para oferecer valor real.</li>
+          <li><strong>Transparência:</strong> Agimos com ética e clareza em todas as etapas de nossos projetos e relacionamentos.</li>
+          <li><strong>Inclusão Digital:</strong> Queremos democratizar o acesso à tecnologia, especialmente para aqueles que enfrentam dificuldades para inovar.</li>
+          <li><strong>Excelência Operacional:</strong> Entregamos produtos robustos, intuitivos e confiáveis que facilitam o dia a dia dos restaurantes.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="mb-5">
+      <h2>O que Oferecemos</h2>
+      <div class="row text-center">
+        <div class="col-md-4 mb-4">
+          <div class="icon-circle mx-auto">📱</div>
+          <h5>Cardápios Digitais Personalizados</h5>
+          <p>Com design responsivo e interface intuitiva, nossos cardápios digitais facilitam o acesso e a atualização das opções disponíveis, aumentando a visibilidade do seu negócio.</p>
+        </div>
+        <div class="col-md-4 mb-4">
+          <div class="icon-circle mx-auto">⚙️</div>
+          <h5>Sistemas Eficientes de Pedidos</h5>
+          <p>Ferramentas integradas que otimizam a gestão de pedidos, garantindo agilidade, organização e redução de erros operacionais.</p>
+        </div>
+        <div class="col-md-4 mb-4">
+          <div class="icon-circle mx-auto">🎯</div>
+          <h5>Identidade Visual e Marketing Digital</h5>
+          <p>Desenvolvemos estratégias visuais e de comunicação que ressaltam a singularidade do seu restaurante, atraindo e fidelizando clientes.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="mb-5">
+      <h2>Visão de Futuro</h2>
+      <p>
+        Almejamos ser referência no mercado nacional como a principal empresa que conecta a tecnologia à gastronomia, impulsionando negócios locais para o sucesso no ambiente digital. Estamos comprometidos em evoluir constantemente, incorporando novas funcionalidades e expandindo nosso alcance para apoiar cada vez mais restaurantes.
+      </p>
+      <p>
+        Acreditamos que a transformação digital deve ser acessível, simples e eficiente, e a <span class="highlight">Cyber Eat</span> trabalha diariamente para tornar essa visão uma realidade concreta.
+      </p>
+    </section>
+
+    <section class="text-center py-4">
+      <h2>Junte-se a Nós!</h2>
+      <p>
+        Seja você um pequeno empreendedor, dono de restaurante ou entusiasta da gastronomia, convidamos você a conhecer nossas soluções e fazer parte dessa revolução digital que está transformando o modo de vender e se conectar com clientes.
+      </p>
+      <p>
+        Vamos juntos colocar seu negócio no mapa digital, com a qualidade e o profissionalismo que a sua comida merece.
+      </p>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 Ma Que Bella! Pizzaria - Todos os direitos reservados.</p>
+    <p>Endereço: Rua das Pizzas, 123 - Centro - São Paulo, SP | Telefone: (11) 99999-9999</p>
+  </footer>
+
+  <script src="../script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+  <script src="../js/header.js" defer></script>
 </body>
-
 </html>

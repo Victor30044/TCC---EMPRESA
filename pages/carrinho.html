@@ -35,6 +35,12 @@
       text-transform: uppercase;
     }
 
+     .navbar-icons img {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+}
+
     nav.navbar .nav-link.active {
       font-weight: 800;
     }
@@ -231,18 +237,13 @@
             <li class="nav-item"><a class="nav-link text-white" href="sobrenos.html">Sobre Nós</a></li>
           </ul>
           <div class="d-lg-flex ms-lg-auto align-items-center navbar-icons">
-            <a href="carrinho.html" class="nav-link" title="Carrinho">
-              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="#fff" class="bi bi-cart" viewBox="0 0 16 16">
-  <path d="M0 1.5A.5.5 0 0 1 .5 1h1a.5.5 0 0 1 .485.379L2.89 5H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 14H4a.5.5 0 0 1-.491-.408L1.01 2H.5a.5.5 0 0 1-.5-.5zM3.102 6l1.313 7h8.17l1.313-7H3.102z"/>
-  <path d="M5 12a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm6 1a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
-            </a>
-            <a href="login.html" class="nav-link" id="btnLogin" title="Login">
-              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="#fff" class="bi bi-person-circle" viewBox="0 0 16 16">
-  <path d="M11 10c1.105 0 2 .672 2 1.5v.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5v-.5c0-.828.895-1.5 2-1.5h6z"/>
-  <path fill-rule="evenodd" d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0-1A6 6 0 1 0 8 2a6 6 0 0 0 0 12z"/>
-  <path d="M8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/>
-</svg>
-            </a>
+            <a href="carrinho.html" class="nav-link svg" title="Carrinho">
+  <img src="assets/shop-cart-svgrepo-com (2).svg" alt="Carrinho de Compras" />
+</a>
+
+<a href="login.html" class="nav-link svg" id="btnLogin" title="Login">
+  <img src="assets/login-2-svgrepo-com.svg" alt="Login" />
+</a>
             <span class="nav-link text-white d-none" id="userName" style="font-weight: bold;"></span>
             <a href="#" class="nav-link text-white d-none" id="btnLogout" style="font-weight: bold; cursor:pointer;">
               Sair
