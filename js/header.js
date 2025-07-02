@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnLogout = document.getElementById("btnLogout");
 
   // Pega o usuário  do localStorage (esperando objeto com 'nome')
-  const usuarioStr = localStorage.getItem("usuario");
+  const usuarioStr = localStorage.getItem("usuarioLogado");
   const usuario = usuarioStr ? JSON.parse(usuarioStr) : null;
 
   if (usuario && usuario.nome) {
