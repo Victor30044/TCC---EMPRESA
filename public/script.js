@@ -1,5 +1,12 @@
 
+const API_BASE = window.location.hostname === 'localhost' 
+  ? 'http://localhost:3000'
+  : 'https://tcc-empresa-tvrj.onrender.com';
 
+// Exemplo de fetch
+fetch(`${API_BASE}/produtos`)
+  .then(res => res.json())
+  .then(data => console.log(data));
 
 class Produto {
     static ultimoCodigo = 0;
@@ -162,7 +169,7 @@ async function add(cod) {
     console.log(`Função ADD ${cod}`);
 
     try {
-        const response = await fetch(`http://localhost:3000/produtos/${cod}`);
+        const response = await fetch(`${API_BASE}/produtos/${cod}`);
         if (!response.ok) {
             console.error('Produto não encontrado no backend');
             return;
@@ -247,7 +254,7 @@ function removeTudo(cod) {
 
 async function abrirModalPizza(produtoId) {
     try {
-        const response = await fetch(`http://localhost:3000/produtos/${produtoId}`);
+        const response = await fetch(`${API_BASE}/produtos/${produtoId}`);
         if (!response.ok) throw new Error('Produto não encontrado');
 
         const produto = await response.json();
@@ -315,7 +322,7 @@ async function abrirModalPizza(produtoId) {
 async function carregarCardapio() {
     console.log('carregarCardapio chamada');
     try {
-        const res = await fetch('http://localhost:3000/produtos');
+        const res = await fetch(`${API_BASE}/produtos`);
         if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
 
         let produtos = await res.json();
@@ -444,7 +451,7 @@ function carregarCarrinho() {
 // localStorage.setItem("carrinho", JSON.stringify(carrinho));
 // por:
 
-if (!isNaN(produtoatual.preco)) {
+if (!isNaN(produto.preco)) {
     localStorage.setItem("carrinho", JSON.stringify(carrinho));
 } else {
     console.warn("Produto com preço inválido não foi salvo.");
@@ -523,7 +530,7 @@ async function cadastrarUsuario(event) {
     localStorage.setItem("usuario", JSON.stringify(usuarioBanco));
 
     try {
-        let res = await fetch('http://localhost:3000/usuarios', {
+        let res = await fetch(`${API_BASE}/usuarios`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(usuario)
@@ -875,7 +882,7 @@ if (!usuario || !usuario.id) {
         return;
     }
 
-    fetch("http://localhost:3000/pedidos", {
+    fetch(`${API_BASE}/pedidos`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
