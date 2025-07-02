@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Evento para logout: limpa localStorage e atualiza a página
   btnLogout.addEventListener("click", (e) => {
     e.preventDefault();
-    localStorage.removeItem("usuario");
+    localStorage.removeItem("usuarioLogado");
     location.reload();
   });
 });
