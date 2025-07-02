@@ -440,7 +440,11 @@ function carregarCarrinho() {
         total += produto.preco * produto.quantidade;
     }
 
-    localStorage.setItem("carrinho", JSON.stringify(carrinho)); // atualiza carrinho limpo
+    if (!isNaN(produto.preco)) {
+        localStorage.setItem("carrinho", JSON.stringify(carrinho));
+    } else {
+        console.warn("Produto com preço inválido não foi salvo.");
+    }
     document.getElementById('totalAmount').innerText = `R$ ${total.toFixed(2)}`;
     exibirBotaoFinalizar();
 }
@@ -449,11 +453,6 @@ function carregarCarrinho() {
 // localStorage.setItem("carrinho", JSON.stringify(carrinho));
 // por:
 
-if (!isNaN(produto.preco)) {
-    localStorage.setItem("carrinho", JSON.stringify(carrinho));
-} else {
-    console.warn("Produto com preço inválido não foi salvo.");
-}
 
 
 function comprar() {
