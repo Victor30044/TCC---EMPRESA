@@ -44,7 +44,7 @@
       container.innerHTML = 'Carregando pedidos...';
 
       try {
-        const res = await fetch('http://localhost:3000/pedidos');
+        const res = await fetch(`${API_BASE}/pedidos`);
         const pedidos = await res.json();
 
         // Filtra apenas os pedidos com status "pendente"
