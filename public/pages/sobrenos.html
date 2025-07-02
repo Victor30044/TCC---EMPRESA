@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -14,6 +15,7 @@
       color: #2c4b3c;
       line-height: 1.7;
     }
+
     .section-title {
       font-size: 3rem;
       font-weight: 700;
@@ -22,6 +24,7 @@
       text-align: center;
       letter-spacing: 1px;
     }
+
     h2 {
       color: #b12a20;
       font-weight: 700;
@@ -30,15 +33,18 @@
       letter-spacing: 1px;
       text-align: center;
     }
+
     p {
       max-width: 900px;
       margin: 0 auto 1.3rem auto;
       font-size: 1.125rem;
     }
+
     .highlight {
       color: #b12a20;
       font-weight: 700;
     }
+
     .bg-light-green {
       background-color: #e7f2ec;
       padding: 2rem;
@@ -49,6 +55,7 @@
       margin-right: auto;
       box-shadow: 0 4px 15px rgba(44, 75, 60, 0.1);
     }
+
     .icon-circle {
       background-color: #b12a20;
       color: white;
@@ -62,21 +69,25 @@
       margin: 0 auto 1rem auto;
       box-shadow: 0 3px 8px rgba(177, 42, 32, 0.6);
     }
+
     .values-list {
       max-width: 900px;
       margin: 2rem auto 4rem auto;
       padding: 0 1rem;
     }
+
     .values-list ul {
       list-style-type: none;
       padding-left: 0;
     }
+
     .values-list ul li {
       font-size: 1.125rem;
       margin-bottom: 1rem;
       padding-left: 1.5rem;
       position: relative;
     }
+
     .values-list ul li::before {
       content: "✔";
       position: absolute;
@@ -84,6 +95,7 @@
       color: #b12a20;
       font-weight: bold;
     }
+
     footer {
       background: #222;
       color: #eee;
@@ -91,86 +103,100 @@
       text-align: center;
       font-size: 0.9rem;
     }
+
     footer a {
       color: #ffb347;
       text-decoration: none;
       transition: color 0.2s ease;
     }
+
     footer a:hover {
       color: #fff;
       text-decoration: underline;
     }
   </style>
 </head>
+
 <body>
-    <header>
-<nav class="navbar navbar-expand-lg bg-body-tertiary">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="../index.html"><img src="../imagens/logo.jfif" alt="Logo Ma Que Bella!" height="50" /></a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-      aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse justify-content-center w-100" id="navbarSupportedContent">
-      <ul class="navbar-nav mb-2 mb-lg-0 mx-auto gap-5">
-        <li class="nav-item"><a class="nav-link text-white" href="../index.html">Início</a></li>
-        <li class="nav-item"><a class="nav-link text-white" href="cardapio.html">Cardápio</a></li>
-        <li class="nav-item"><a class="nav-link text-white active" href="sobrenos.html">Sobre Nós</a></li>
-      </ul>
-      <div class="d-lg-flex ms-lg-auto align-items-center navbar-icons">
-        <a href="carrinho.html" class="nav-link" title="Carrinho">
-<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="#fff" class="bi bi-cart" viewBox="0 0 16 16">
-  <path d="M0 1.5A.5.5 0 0 1 .5 1h1a.5.5 0 0 1 .485.379L2.89 5H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 14H4a.5.5 0 0 1-.491-.408L1.01 2H.5a.5.5 0 0 1-.5-.5zM3.102 6l1.313 7h8.17l1.313-7H3.102z"/>
-  <path d="M5 12a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm6 1a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
-</svg>
+  <header>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="../index.html"><img src="../imagens/logo.jfif" alt="Logo Ma Que Bella!"
+            height="50" /></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-center w-100" id="navbarSupportedContent">
+          <ul class="navbar-nav mb-2 mb-lg-0 mx-auto gap-5">
+            <li class="nav-item"><a class="nav-link text-white" href="../index.html">Início</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="cardapio.html">Cardápio</a></li>
+            <li class="nav-item"><a class="nav-link text-white active" href="sobrenos.html">Sobre Nós</a></li>
+          </ul>
+          <div class="d-lg-flex ms-lg-auto align-items-center navbar-icons">
+            <a href="carrinho.html" class="nav-link" title="Carrinho">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="#fff" class="bi bi-cart"
+                viewBox="0 0 16 16">
+                <path
+                  d="M0 1.5A.5.5 0 0 1 .5 1h1a.5.5 0 0 1 .485.379L2.89 5H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 14H4a.5.5 0 0 1-.491-.408L1.01 2H.5a.5.5 0 0 1-.5-.5zM3.102 6l1.313 7h8.17l1.313-7H3.102z" />
+                <path d="M5 12a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm6 1a1 1 0 1 1-2 0 1 1 0 0 1 2 0z" />
+              </svg>
 
-        </a>
+            </a>
 
 
 
-        <a href="login.html" class="nav-link" id="btnLogin" title="Login">
-<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="#fff" class="bi bi-person-circle" viewBox="0 0 16 16">
-  <path d="M11 10c1.105 0 2 .672 2 1.5v.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5v-.5c0-.828.895-1.5 2-1.5h6z"/>
-  <path fill-rule="evenodd" d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0-1A6 6 0 1 0 8 2a6 6 0 0 0 0 12z"/>
-  <path d="M8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/>
-</svg>
+            <a href="login.html" class="nav-link" id="btnLogin" title="Login">
+              <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="#fff" class="bi bi-person-circle"
+                viewBox="0 0 16 16">
+                <path
+                  d="M11 10c1.105 0 2 .672 2 1.5v.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5v-.5c0-.828.895-1.5 2-1.5h6z" />
+                <path fill-rule="evenodd" d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0-1A6 6 0 1 0 8 2a6 6 0 0 0 0 12z" />
+                <path d="M8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" />
+              </svg>
 
-        </a>
+            </a>
 
-        <span class="nav-link text-white d-none" id="userName" style="font-weight: bold;"></span>
+            <span class="nav-link text-white d-none" id="userName" style="font-weight: bold;"></span>
 
-        <a href="#" class="nav-link text-white d-none" id="btnLogout" style="font-weight: bold; cursor:pointer;">
-          Sair
-        </a>
+            <a href="#" class="nav-link text-white d-none" id="btnLogout" style="font-weight: bold; cursor:pointer;">
+              Sair
+            </a>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-</nav>
-    </header>
+    </nav>
+  </header>
 
   <main class="container py-5">
     <h1 class="section-title">Nossa História</h1>
     <p class="lead text-center mb-5">
-      A <span class="highlight">Ma Que Bella!</span> é uma pizzaria que nasceu da paixão pela culinária italiana e do desejo de oferecer sabores autênticos e inesquecíveis para nossa comunidade.
+      A <span class="highlight">Ma Que Bella!</span> é uma pizzaria que nasceu da paixão pela culinária italiana e do
+      desejo de oferecer sabores autênticos e inesquecíveis para nossa comunidade.
     </p>
 
     <section class="mb-5">
       <h2>Como Tudo Começou</h2>
       <p>
-        Fundada em 2015, a Ma Que Bella! surgiu do sonho de um grupo de amigos apaixonados por pizza que queria trazer para a cidade uma experiência gastronômica diferenciada, que combinasse tradição e inovação.
+        Fundada em 2015, a Ma Que Bella! surgiu do sonho de um grupo de amigos apaixonados por pizza que queria trazer
+        para a cidade uma experiência gastronômica diferenciada, que combinasse tradição e inovação.
       </p>
       <p>
-        Desde o começo, nossa missão foi simples: usar ingredientes frescos e de qualidade, respeitar as receitas tradicionais italianas e criar um ambiente acolhedor onde cada cliente se sentisse em casa.
+        Desde o começo, nossa missão foi simples: usar ingredientes frescos e de qualidade, respeitar as receitas
+        tradicionais italianas e criar um ambiente acolhedor onde cada cliente se sentisse em casa.
       </p>
       <p>
-        Ao longo dos anos, conquistamos o carinho e a fidelidade de nossos clientes graças ao cuidado artesanal em cada fatia e à busca constante por inovação nos sabores e serviços.
+        Ao longo dos anos, conquistamos o carinho e a fidelidade de nossos clientes graças ao cuidado artesanal em cada
+        fatia e à busca constante por inovação nos sabores e serviços.
       </p>
     </section>
 
     <section class="bg-light-green mb-5">
       <h2>Nossa Missão</h2>
       <p>
-        Proporcionar momentos memoráveis através da nossa pizza, combinando sabor, qualidade e atendimento excepcional. Queremos ser referência local em gastronomia, fazendo da Ma Que Bella! um ponto de encontro para famílias, amigos e amantes da boa pizza.
+        Proporcionar momentos memoráveis através da nossa pizza, combinando sabor, qualidade e atendimento excepcional.
+        Queremos ser referência local em gastronomia, fazendo da Ma Que Bella! um ponto de encontro para famílias,
+        amigos e amantes da boa pizza.
       </p>
     </section>
 
@@ -178,11 +204,16 @@
       <h2>Valores que Nos Guiam</h2>
       <div class="values-list">
         <ul>
-          <li><strong>Qualidade Artesanal:</strong> Valorizamos o preparo cuidadoso, respeitando tradições e utilizando ingredientes selecionados.</li>
-          <li><strong>Hospitalidade:</strong> Acolhemos nossos clientes com carinho e atenção, oferecendo uma experiência agradável e personalizada.</li>
-          <li><strong>Inovação:</strong> Estamos sempre buscando novos sabores e formas de surpreender nossos clientes.</li>
-          <li><strong>Compromisso com a Comunidade:</strong> Apoiamos iniciativas locais e valorizamos a cultura e os ingredientes da nossa região.</li>
-          <li><strong>Transparência e Ética:</strong> Agimos com honestidade e responsabilidade em todas as nossas relações.</li>
+          <li><strong>Qualidade Artesanal:</strong> Valorizamos o preparo cuidadoso, respeitando tradições e utilizando
+            ingredientes selecionados.</li>
+          <li><strong>Hospitalidade:</strong> Acolhemos nossos clientes com carinho e atenção, oferecendo uma
+            experiência agradável e personalizada.</li>
+          <li><strong>Inovação:</strong> Estamos sempre buscando novos sabores e formas de surpreender nossos clientes.
+          </li>
+          <li><strong>Compromisso com a Comunidade:</strong> Apoiamos iniciativas locais e valorizamos a cultura e os
+            ingredientes da nossa região.</li>
+          <li><strong>Transparência e Ética:</strong> Agimos com honestidade e responsabilidade em todas as nossas
+            relações.</li>
         </ul>
       </div>
     </section>
@@ -193,7 +224,8 @@
         <div class="col-md-4 mb-4">
           <div class="icon-circle mx-auto">🍕</div>
           <h5>Sabores Autênticos</h5>
-          <p>Receitas tradicionais italianas preparadas com ingredientes frescos e selecionados para garantir o melhor sabor em cada pedaço.</p>
+          <p>Receitas tradicionais italianas preparadas com ingredientes frescos e selecionados para garantir o melhor
+            sabor em cada pedaço.</p>
         </div>
         <div class="col-md-4 mb-4">
           <div class="icon-circle mx-auto">🚚</div>
@@ -211,17 +243,20 @@
     <section class="mb-5">
       <h2>Visão de Futuro</h2>
       <p>
-        A Ma Que Bella! busca ser reconhecida como a pizzaria que une tradição e inovação, expandindo sua presença e conquistando cada vez mais clientes com qualidade e paixão pelo que faz.
+        A Ma Que Bella! busca ser reconhecida como a pizzaria que une tradição e inovação, expandindo sua presença e
+        conquistando cada vez mais clientes com qualidade e paixão pelo que faz.
       </p>
       <p>
-        Continuaremos investindo em tecnologia e atendimento para oferecer a melhor experiência, mantendo sempre o respeito pela autenticidade que nos tornou especiais.
+        Continuaremos investindo em tecnologia e atendimento para oferecer a melhor experiência, mantendo sempre o
+        respeito pela autenticidade que nos tornou especiais.
       </p>
     </section>
 
     <section class="text-center py-4">
       <h2>Venha Nos Visitar!</h2>
       <p>
-        Seja para saborear uma pizza deliciosa no nosso espaço ou para pedir no conforto da sua casa, a Ma Que Bella! está pronta para te receber com todo o carinho e sabor que você merece.
+        Seja para saborear uma pizza deliciosa no nosso espaço ou para pedir no conforto da sua casa, a Ma Que Bella!
+        está pronta para te receber com todo o carinho e sabor que você merece.
       </p>
       <p>
         Agradecemos a sua preferência e esperamos fazer parte das suas melhores memórias gastronômicas.
@@ -235,7 +270,9 @@
   </footer>
 
   <script src="../script.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
+    crossorigin="anonymous"></script>
   <script src="../js/header.js" defer></script>
 </body>
+
 </html>
