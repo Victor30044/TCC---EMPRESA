@@ -438,16 +438,16 @@ function carregarCarrinho() {
             </div>
         `;
         total += produto.preco * produto.quantidade;
+        if (!isNaN(produto.preco)) {
+            localStorage.setItem("carrinho", JSON.stringify(carrinho));
+        } else {
+            console.warn("Produto com preço inválido não foi salvo.");
+        }
+        document.getElementById('totalAmount').innerText = `R$ ${total.toFixed(2)}`;
+        exibirBotaoFinalizar();
+    }
     }
 
-    if (!isNaN(produto.preco)) {
-        localStorage.setItem("carrinho", JSON.stringify(carrinho));
-    } else {
-        console.warn("Produto com preço inválido não foi salvo.");
-    }
-    document.getElementById('totalAmount').innerText = `R$ ${total.toFixed(2)}`;
-    exibirBotaoFinalizar();
-}
 
 // dentro da função add(cod), substitua:
 // localStorage.setItem("carrinho", JSON.stringify(carrinho));
