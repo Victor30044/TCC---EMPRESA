@@ -247,26 +247,68 @@ async function abrirModalPizza(produtoId) {
     try {
         const response = await fetch(`http://localhost:3000/produtos/${produtoId}`);
         if (!response.ok) throw new Error('Produto não encontrado');
-        
+
         const produto = await response.json();
 
-        document.getElementById('pizzaImage').src = "../imagens/logo.jfif";
-        document.getElementById('pizzaNome').textContent = produto.nome;
-        document.getElementById('pizzaDescricao').textContent = produto.descricao || "Descrição não disponível";
-        document.getElementById('pizzaPreco').textContent = `R$ ${produto.preco.toFixed(2)}`;
+        // Remove modal anterior, se houver
+        const modalExistente = document.getElementById('pizzaModal');
+        if (modalExistente) modalExistente.remove();
 
-        const addButton = document.getElementById('modalAddButton');
-        addButton.onclick = function() {
+        // Cria estrutura do modal
+        const modalHTML = `
+            <div class="modal fade" id="pizzaModal" tabindex="-1" aria-labelledby="pizzaModalLabel" aria-hidden="true">
+              <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+
+                  <!-- TOPO -->
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="pizzaModalLabel">Detalhes da Pizza</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                  </div>
+
+                  <!-- CORPO -->
+                  <div class="modal-body d-flex flex-row flex-wrap p-0">
+                    <!-- INFORMAÇÕES -->
+                    <div class="modal-info p-4 flex-grow-1">
+                      <h5 id="pizzaNome">${produto.nome}</h5>
+                      <p id="pizzaDescricao">${produto.descricao || "Descrição não disponível"}</p>
+                      <div id="pizzaPreco" class="preco">R$ ${produto.preco.toFixed(2)}</div>
+                    </div>
+
+                    <!-- IMAGEM -->
+                    <div class="modal-img p-3 d-flex align-items-center justify-content-center" style="max-width: 50%;">
+                      <img id="pizzaImage" src="../imagens/logo.jfif" alt="Imagem da Pizza">
+                    </div>
+                  </div>
+
+                  <!-- RODAPÉ -->
+                  <div class="modal-footer">
+                    <button id="modalAddButton" class="btn btn-success">Adicionar ao Carrinho</button>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+        `;
+
+        // Adiciona ao body
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+        // Define evento do botão
+        document.getElementById('modalAddButton').onclick = function () {
             add(produtoId);
             bootstrap.Modal.getInstance(document.getElementById('pizzaModal')).hide();
         };
 
+        // Mostra o modal
         new bootstrap.Modal(document.getElementById('pizzaModal')).show();
+
     } catch (error) {
         console.error('Erro ao abrir modal da pizza:', error);
         alert('Erro ao carregar detalhes da pizza');
     }
 }
+
 
 async function carregarCardapio() {
     console.log('carregarCardapio chamada');
@@ -319,8 +361,9 @@ async function carregarCardapio() {
                 const div = document.createElement('div');
                 div.className = 'produto';
                 div.id = `id_produto${produto.id}`;
+                div.setAttribute("onclick", `abrirModalPizza(${produto.id})`)
                 div.innerHTML = `
-                    <img src="../imagens/logo.jfif" onclick="abrirModalPizza(${produto.id})" style="cursor: pointer;">
+                    <img src="../imagens/logo.jfif">
                     <h3>${produto.nome}</h3>
                     <p>R$ ${produto.preco.toFixed(2)}</p>
                     <button onclick="add(${produto.id})">Adicionar ao carrinho</button>
