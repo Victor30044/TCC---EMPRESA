@@ -902,6 +902,7 @@ if (!usuario || !usuario.id) {
         console.error("Erro ao enviar pedido:", err);
         alert("Erro ao salvar pedido no banco.");
     });
+    carregarCarrinho();
 }
 
 finalizarPedido(itens, total + frete, tipo); // tipo vem do radio button (credito ou entrega)
