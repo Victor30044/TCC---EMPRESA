@@ -248,6 +248,10 @@
   </div>
 
   <script>
+    const API_BASE = window.location.hostname === 'localhost' 
+  ? 'http://localhost:3000'
+  : 'https://tcc-empresa-tvrj.onrender.com';
+
     // Auto preenchimento via CEP
     document.getElementById("cepUsuario").addEventListener("blur", function () {
       const cep = this.value.replace(/\D/g, "");
@@ -289,7 +293,7 @@
       const dados = { nome, email, senha, telefone, endereco };
 
       try {
-        const resposta = await fetch("http://localhost:3000/usuarios", {
+        const resposta = await fetch(`${API_BASE}/usuarios`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(dados)

@@ -4,9 +4,7 @@ const API_BASE = window.location.hostname === 'localhost'
   : 'https://tcc-empresa-tvrj.onrender.com';
 
 // Exemplo de fetch
-fetch(`${API_BASE}/produtos`)
-  .then(res => res.json())
-  .then(data => console.log(data));
+
 
 class Produto {
     static ultimoCodigo = 0;
